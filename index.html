@@ -1,0 +1,1138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>The Loom — BU Learning</title>
+<link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#FDFBFE;--panel:rgba(255,255,255,.86);--line:rgba(29,25,33,.14);--teal:#7B4FA6;
+  --pink:#CE0058;--bupink:#96003F;--mint:#E85D9E;--gold:#7B4FA6;--lav:#7B4FA6;
+  --cream:#1D1925;--coursera:#0056D2;--text:#1D1925;--dim:#5A5566;
+  --hn:"Helvetica Neue",Helvetica,Arial,sans-serif;--mono:"Roboto Mono",ui-monospace,monospace;
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+*:focus{outline:none}
+.sh,.btn,.pin,.node{-webkit-tap-highlight-color:transparent}
+body{font-family:var(--hn);background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden}
+
+/* ===== animated atmosphere ===== */
+.sky{position:fixed;inset:0;z-index:0;background:
+  linear-gradient(180deg,#FFFFFF 0%,var(--bg) 45%,#FBEAF3 82%,#F5E3FA 100%)}
+.aurora{position:fixed;inset:0;z-index:0;pointer-events:none}
+.aurora span{position:absolute;border-radius:50%;filter:blur(70px);opacity:.28}
+.aurora span:nth-child(1){width:60vw;height:34vw;left:52%;top:-14vw;
+  background:radial-gradient(circle,rgba(206,0,88,.16),transparent 68%);
+  animation:drift1 26s ease-in-out infinite alternate}
+.aurora span:nth-child(2){width:48vw;height:30vw;left:-8vw;top:-8vw;
+  background:radial-gradient(circle,rgba(123,79,166,.16),transparent 68%);
+  animation:drift2 34s ease-in-out infinite alternate}
+.aurora span:nth-child(3){width:44vw;height:26vw;left:22%;top:6vw;
+  background:radial-gradient(circle,rgba(232,93,158,.16),transparent 70%);
+  animation:drift3 44s ease-in-out infinite alternate}
+@keyframes drift1{to{transform:translate(-9vw,5vw) scale(1.12)}}
+@keyframes drift2{to{transform:translate(11vw,7vw) scale(1.08)}}
+@keyframes drift3{to{transform:translate(-7vw,-4vw) scale(1.15)}}
+.stars{position:fixed;inset:0;z-index:0;pointer-events:none;display:none} /* doesn't fit a light/day theme */
+.stars circle{animation:tw 5s ease-in-out infinite alternate}
+@keyframes tw{from{opacity:.15}to{opacity:.75}}
+.mist{position:fixed;left:0;right:0;bottom:0;height:44vh;z-index:0;pointer-events:none;overflow:hidden}
+.mist i{position:absolute;bottom:0;height:100%;width:220%;
+  background:radial-gradient(60% 42% at 30% 88%,rgba(201,168,255,.10),transparent 70%),
+             radial-gradient(48% 36% at 72% 92%,rgba(255,95,168,.09),transparent 72%);}
+.mist i:nth-child(1){animation:mist 58s linear infinite}
+.mist i:nth-child(2){animation:mist 96s linear infinite reverse;opacity:.7}
+@keyframes mist{from{transform:translateX(-52%)}to{transform:translateX(0)}}
+.snow{position:fixed;inset:0;z-index:1;pointer-events:none;overflow:hidden}
+.snow b{position:absolute;top:-8px;border-radius:50%;background:#E85D9E;
+  animation:fall linear infinite}
+@keyframes fall{0%{transform:translateY(-8vh) translateX(0);opacity:0}
+  10%{opacity:.7}90%{opacity:.5}100%{transform:translateY(108vh) translateX(5vw);opacity:0}}
+@media (prefers-reduced-motion:reduce){
+  .aurora span,.mist i,.snow b,.stars circle{animation:none!important}
+  .snow{display:none}
+}
+
+/* ===== floating neon 3D shapes (ambient) — outer wrapper floats, inner shape spins ===== */
+.shapes3d{position:fixed;inset:0;z-index:1;pointer-events:none;perspective:900px}
+.shapes3d i{position:absolute;display:block} /* outer: position + float only, no transform conflict */
+.shapes3d i b{display:block;width:100%;height:100%;transform-style:preserve-3d;
+  border:2px solid var(--edge3d);border-radius:6px;
+  background:linear-gradient(135deg,rgba(255,255,255,.06),transparent 60%);
+  box-shadow:0 0 26px var(--edge3d),inset 0 0 18px var(--edge3d);opacity:.5}
+.shapes3d .sh1{--edge3d:rgba(255,95,168,.7);width:70px;height:70px;top:10%;left:6%;animation:float1 13s ease-in-out infinite}
+.shapes3d .sh1 b{animation:spin3d 17s linear infinite}
+.shapes3d .sh2{--edge3d:rgba(255,194,226,.7);width:50px;height:50px;top:64%;left:4%;animation:float2 16s ease-in-out infinite}
+.shapes3d .sh2 b{border-radius:50%;animation:spin3d 22s linear infinite reverse}
+.shapes3d .sh3{--edge3d:rgba(245,168,216,.7);width:60px;height:60px;top:20%;right:7%;animation:float3 14s ease-in-out infinite}
+.shapes3d .sh3 b{animation:spin3d 19s linear infinite}
+.shapes3d .sh4{--edge3d:rgba(201,168,255,.7);width:42px;height:42px;top:75%;right:10%;animation:float1 18s ease-in-out infinite reverse}
+.shapes3d .sh4 b{border-radius:50%;animation:spin3d 25s linear infinite}
+.shapes3d .sh5{--edge3d:rgba(255,194,226,.6);width:36px;height:36px;top:42%;left:48%;animation:float2 15s ease-in-out infinite}
+.shapes3d .sh5 b{animation:spin3d 20s linear infinite reverse}
+@keyframes spin3d{from{transform:rotateX(0) rotateY(0) rotateZ(0)}to{transform:rotateX(360deg) rotateY(360deg) rotateZ(360deg)}}
+@keyframes float1{0%,100%{transform:translateY(0) translateX(0)}50%{transform:translateY(-26px) translateX(14px)}}
+@keyframes float2{0%,100%{transform:translateY(0) translateX(0)}50%{transform:translateY(22px) translateX(-16px)}}
+@keyframes float3{0%,100%{transform:translateY(0) translateX(0)}50%{transform:translateY(-18px) translateX(-12px)}}
+@media (prefers-reduced-motion:reduce){.shapes3d i,.shapes3d i b{animation:none!important}}
+/* ===== ROUTE MAP — animation ===== */
+.map svg .liveRingPulse{transform-box:fill-box;transform-origin:center;animation:ringPulse 1.7s ease-out infinite}
+.map svg .liveRingPulse2{transform-box:fill-box;transform-origin:center;animation:ringPulse 1.7s ease-out .55s infinite}
+@keyframes ringPulse{0%{transform:scale(.55);opacity:.85}100%{transform:scale(2.1);opacity:0}}
+.map svg .climber{transform-box:fill-box;transform-origin:center;animation:climbBob 1.6s ease-in-out infinite}
+@keyframes climbBob{0%,100%{transform:translateY(0) rotate(-2deg)}50%{transform:translateY(-4px) rotate(2deg)}}
+.map svg .homeGlow{transform-box:fill-box;transform-origin:center;animation:homePulse 2.6s ease-in-out infinite}
+@keyframes homePulse{0%,100%{opacity:.28;transform:scale(1)}50%{opacity:.6;transform:scale(1.18)}}
+.map svg .homeIcon{transform-box:fill-box;transform-origin:center;animation:homeBob 2.4s ease-in-out infinite}
+@keyframes homeBob{0%,100%{transform:translateY(0)}50%{transform:translateY(-2.5px)}}
+.map svg .windLine{stroke-dasharray:5 9;animation:windDrift 2.6s linear infinite}
+@keyframes windDrift{to{stroke-dashoffset:-28}}
+.map svg .iceSpark{transform-box:fill-box;transform-origin:center;animation:iceTwinkle 2.2s ease-in-out infinite alternate}
+@keyframes iceTwinkle{from{opacity:.15;transform:scale(.7)}to{opacity:.9;transform:scale(1.15)}}
+.map svg .flagWave{transform-box:fill-box;transform-origin:left center;animation:flagWave 1.4s ease-in-out infinite}
+@keyframes flagWave{0%,100%{transform:skewY(0deg)}50%{transform:skewY(-6deg)}}
+.map svg .trailAnt{stroke-dasharray:8 8;animation:antTrail 1.1s linear infinite}
+@keyframes antTrail{to{stroke-dashoffset:-16}}
+@media (prefers-reduced-motion:reduce){
+  .map svg .liveRingPulse,.map svg .liveRingPulse2,.map svg .climber,.map svg .homeGlow,
+  .map svg .homeIcon,.map svg .windLine,.map svg .iceSpark,.map svg .flagWave,.map svg .trailAnt{animation:none!important}
+}
+.map svg .burstDot{transform-box:fill-box;transform-origin:center;animation:burstOut .85s cubic-bezier(.15,.7,.3,1) forwards}
+@keyframes burstOut{0%{transform:translate(0,0) scale(1);opacity:1}100%{transform:translate(var(--bx),var(--by)) scale(.2);opacity:0}}
+.map svg .burstRing{transform-box:fill-box;transform-origin:center;animation:burstRing .7s ease-out forwards}
+@keyframes burstRing{0%{transform:scale(.4);opacity:.9}100%{transform:scale(2.6);opacity:0}}
+@media (prefers-reduced-motion:reduce){.map svg .burstDot,.map svg .burstRing{animation:none!important;opacity:0}}
+
+/* ===== LEADERBOARD ===== */
+.lbBtn{display:inline-flex;align-items:center;gap:7px;
+  padding:8px 13px;border-radius:999px;border:1px solid rgba(245,168,216,.45);
+  background:linear-gradient(180deg,rgba(245,168,216,.14),rgba(245,168,216,.04));
+  color:var(--gold);font-family:var(--mono);font-size:11px;letter-spacing:.5px;cursor:pointer;white-space:nowrap;
+  box-shadow:0 3px 10px rgba(123,79,166,.18);transition:box-shadow .3s,transform .2s}
+.lbBtn:hover{box-shadow:0 5px 16px rgba(123,79,166,.28)}
+.lbBtn:active{transform:translateY(2px)}
+#lbDrawer{position:fixed;top:0;right:-360px;width:340px;max-width:90vw;height:100%;z-index:230;
+  background:linear-gradient(180deg,#FFFFFF,#FBEAF3);border-left:1px solid rgba(206,0,88,.28);
+  box-shadow:-14px 0 50px rgba(29,25,33,.18);transition:right .4s cubic-bezier(.2,.9,.3,1);padding:24px;overflow-y:auto}
+#lbDrawer.open{right:0}
+#lbDrawer h3{font-family:var(--mono);font-weight:700;letter-spacing:2.5px;font-size:15px;color:var(--gold);
+  text-shadow:0 0 14px rgba(245,168,216,.5);margin-bottom:5px}
+#lbDrawer .lbnote{font-size:11.5px;color:var(--dim);margin-bottom:16px;line-height:1.5}
+.lbrow{display:flex;align-items:center;gap:11px;padding:10px 12px;border-radius:10px;margin-bottom:8px;
+  background:rgba(123,79,166,.04);border:1px solid rgba(29,25,33,.08)}
+.lbrow .rank{font-family:var(--mono);font-size:11px;width:26px;color:var(--dim)}
+.lbrow:nth-child(1) .rank{color:var(--gold);text-shadow:0 0 10px var(--gold)}
+.lbrow:nth-child(2) .rank{color:#D8D0E8}
+.lbrow:nth-child(3) .rank{color:var(--lav)}
+.lbrow .nm{flex:1;font-size:13px;letter-spacing:.4px}
+.lbrow .pts{color:var(--mint);font-size:12.5px;font-family:var(--mono)}
+.lbrow.me{border-color:var(--pink);box-shadow:0 3px 10px rgba(206,0,88,.2)}
+.lbrow.me .nm{color:var(--pink)}
+#lbClose{margin-top:6px;width:100%;font-family:var(--mono);letter-spacing:1.5px;font-size:11.5px;
+  background:transparent;border:1px solid rgba(245,168,216,.4);color:var(--gold);border-radius:8px;padding:10px;cursor:pointer}
+#lbClose:hover{box-shadow:0 4px 12px rgba(123,79,166,.22)}
+
+/* ===== AI COACH ===== */
+.coachBtn{display:inline-flex;align-items:center;gap:7px;
+  padding:9px 15px;border-radius:999px;border:none;
+  background:linear-gradient(180deg,#7DF3DC,var(--mint));
+  color:#052A23;font-family:var(--mono);font-size:11.5px;font-weight:700;letter-spacing:.5px;cursor:pointer;white-space:nowrap;
+  box-shadow:0 4px 14px rgba(232,93,158,.4);
+  animation:coachPulse 2.4s ease-in-out infinite;transition:box-shadow .2s,transform .2s}
+.coachBtn:hover{box-shadow:0 6px 18px rgba(232,93,158,.55)}
+.coachBtn:active{transform:translateY(2px)}
+@keyframes coachPulse{0%,100%{box-shadow:0 4px 14px rgba(232,93,158,.4)}
+  50%{box-shadow:0 6px 18px rgba(232,93,158,.6)}}
+@media (prefers-reduced-motion:reduce){.coachBtn{animation:none}}
+#coachDrawer{position:fixed;top:0;right:-360px;width:340px;max-width:90vw;height:100%;z-index:230;
+  background:linear-gradient(180deg,#FFFFFF,#F5E3FA);border-left:1px solid rgba(232,93,158,.3);
+  box-shadow:-14px 0 50px rgba(29,25,33,.18);transition:right .4s cubic-bezier(.2,.9,.3,1);padding:24px;overflow-y:auto}
+#coachDrawer.open{right:0}
+#coachDrawer h3{font-family:var(--mono);font-weight:700;letter-spacing:2.5px;font-size:15px;color:var(--mint);
+  text-shadow:0 0 14px rgba(255,194,226,.5);margin-bottom:5px}
+#coachDrawer textarea{background:#FDFBFE}
+#coachClose{margin-top:10px;width:100%;font-family:var(--mono);letter-spacing:1.5px;font-size:11.5px;
+  background:transparent;border:1px solid rgba(255,194,226,.4);color:var(--mint);border-radius:8px;padding:10px;cursor:pointer}
+#coachClose:hover{box-shadow:0 4px 12px rgba(232,93,158,.25)}
+
+
+
+/* ===== HUD ===== */
+.hud{position:sticky;top:0;z-index:60;display:flex;align-items:center;gap:18px;flex-wrap:wrap;
+  padding:10px 20px;background:rgba(255,255,255,.88);backdrop-filter:blur(16px);border-bottom:1px solid var(--line)}
+.brand{display:flex;align-items:baseline;gap:10px}
+.brand b{font-size:15px;font-weight:700;color:var(--cream)}
+.brand i{font-style:normal;font-size:9.5px;color:var(--pink);font-family:var(--mono);
+  text-transform:uppercase;letter-spacing:.18em;text-shadow:0 0 12px rgba(255,95,168,.7)}
+.stat{display:flex;flex-direction:column;gap:2px;min-width:72px}
+.stat u{text-decoration:none;font-size:8.5px;color:var(--dim);font-family:var(--mono);
+  text-transform:uppercase;letter-spacing:.18em}
+.stat b{font-size:15.5px;font-weight:700;font-family:var(--mono)}
+.stat b.p{color:var(--pink);text-shadow:0 0 14px rgba(255,95,168,.6)}
+.bar{flex:1;min-width:120px;height:8px;border-radius:99px;background:rgba(244,243,233,.09);
+  border:1px solid var(--line);overflow:hidden}
+.bar{background:rgba(29,25,33,.07)}
+.bar>i{display:block;height:100%;width:0;border-radius:99px;
+  background:linear-gradient(90deg,var(--bupink),var(--pink) 55%,var(--mint));
+  box-shadow:0 2px 6px rgba(206,0,88,.35);transition:width .8s cubic-bezier(.2,.9,.2,1)}
+.me{display:flex;align-items:center;gap:9px;margin-left:auto}
+.me .who{text-align:right;line-height:1.25}
+.me .who b{display:block;font-size:12px;font-weight:700}
+.me .who span{font-size:9px;color:var(--dim);font-family:var(--mono);letter-spacing:.1em}
+.av{width:36px;height:36px;flex:0 0 36px;border-radius:50%;display:grid;place-items:center;
+  font-family:var(--mono);font-size:12.5px;font-weight:700;color:#fff;
+  background:linear-gradient(145deg,var(--pink),var(--bupink));
+  box-shadow:0 3px 10px rgba(206,0,88,.3);border:1px solid rgba(255,150,190,.5)}
+
+/* ===== layout ===== */
+.wrap{position:relative;z-index:10;max-width:1440px;margin:0 auto;padding:24px 28px 96px}
+h1{font-size:clamp(36px,6.4vw,68px);font-weight:700;line-height:1.02;letter-spacing:-.025em;margin-bottom:12px}
+h1 em{font-style:normal;color:var(--pink);text-shadow:0 0 30px rgba(255,95,168,.55)}
+.sub{color:var(--dim);max-width:64ch;font-size:18px;line-height:1.6;margin-bottom:28px}
+
+.map{position:relative;border:1px solid var(--line);border-radius:18px;overflow:hidden;margin-bottom:26px;
+  aspect-ratio:2328/1292;
+  background:linear-gradient(180deg,#0C1428 0%,#070C18 60%,#04070E 100%)}
+.map .mapBg{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.map #layer{position:absolute;inset:0;width:100%;height:100%;z-index:3}
+.map .prog{position:absolute;top:13px;right:16px;z-index:5;font-size:8.5px;color:var(--pink);
+  font-family:var(--mono);text-transform:uppercase;letter-spacing:.2em}
+
+.mNode{cursor:pointer}
+.mNode .hit{fill:transparent}
+.mNode:hover .halo{opacity:.6}
+.mNode:focus{outline:none}
+.mNode:focus .halo{opacity:.75}
+
+.seg{fill:none;stroke-linecap:round}
+.segDone{stroke:url(#rainbow);stroke-width:5.5;stroke-dasharray:16 13;
+  filter:url(#pathGlow);animation:march 1.35s linear infinite}
+@keyframes march{to{stroke-dashoffset:-29}}
+.segTodo{stroke:#8E7FA8;stroke-width:2.6;stroke-dasharray:3 14;opacity:.35}
+
+.pulseA,.pulseB{transform-box:fill-box;transform-origin:center;animation:ping 2s ease-out infinite}
+.pulseB{animation-delay:.7s}
+@keyframes ping{0%{transform:scale(.62);opacity:.9}100%{transform:scale(2.1);opacity:0}}
+.breathe{transform-box:fill-box;transform-origin:center;animation:breathe 2.8s ease-in-out infinite}
+@keyframes breathe{0%,100%{opacity:.30;transform:scale(1)}50%{opacity:.62;transform:scale(1.13)}}
+.flagCloth{transform-box:fill-box;transform-origin:left center;animation:wave 1.6s ease-in-out infinite}
+@keyframes wave{0%,100%{transform:skewY(0deg) scaleY(1)}50%{transform:skewY(-8deg) scaleY(.9)}}
+.walker{transform-box:fill-box;transform-origin:center bottom;animation:bob 1.8s ease-in-out infinite}
+@keyframes bob{0%,100%{transform:translateY(0) rotate(-1.5deg)}50%{transform:translateY(-3.5px) rotate(1.5deg)}}
+.scarf{transform-box:fill-box;transform-origin:left center;animation:scarfFlow 1.3s ease-in-out infinite}
+@keyframes scarfFlow{0%,100%{transform:skewY(0deg) scaleX(1)}50%{transform:skewY(-16deg) scaleX(1.14)}}
+.sparkle{animation:spark 2.4s ease-in-out infinite alternate}
+@keyframes spark{from{opacity:.12}to{opacity:.9}}
+@media (prefers-reduced-motion:reduce){
+  .segDone,.pulseA,.pulseB,.breathe,.flagCloth,.walker,.scarf,.sparkle{animation:none!important}
+}
+
+.mCard{position:absolute;max-width:236px;padding:14px 16px;border-radius:13px;pointer-events:none;
+  background:rgba(12,7,20,.94);border:1px solid rgba(255,95,168,.45);
+  box-shadow:0 14px 34px -10px rgba(0,0,0,.85);opacity:0;transform:translateY(6px);
+  transition:opacity .25s,transform .25s;z-index:6}
+.mCard.show{opacity:1;transform:translateY(0)}
+.mCard .num{font-family:var(--mono);font-size:10px;letter-spacing:.2em;color:#FF9ECB}
+.mCard h4{font-family:var(--mono);font-size:13.5px;letter-spacing:.16em;color:#FDF4FA;margin:3px 0 7px}
+.mCard p{font-size:12.5px;line-height:1.55;color:#B9A9CC}
+.mCard .state{display:inline-block;margin-top:9px;font-family:var(--mono);font-size:9px;
+  letter-spacing:.14em;text-transform:uppercase;padding:3px 9px;border-radius:99px}
+.ms-done{background:rgba(201,168,255,.16);color:#C9A8FF;border:1px solid rgba(201,168,255,.42)}
+.ms-live{background:rgba(255,95,168,.16);color:#FF5FA8;border:1px solid rgba(255,95,168,.48)}
+.ms-lock{background:rgba(160,150,175,.12);color:#9C90AE;border:1px solid rgba(160,150,175,.3)}
+
+.stage{border:1px solid var(--line);border-radius:14px;background:var(--panel);backdrop-filter:blur(10px);
+  margin-bottom:13px;overflow:hidden;transition:border-color .3s,box-shadow .3s;scroll-margin-top:76px}
+.stage.on{border-color:rgba(206,0,88,.4);box-shadow:0 0 0 1px rgba(206,0,88,.1),0 12px 28px -14px rgba(206,0,88,.35)}
+.stage.done{border-color:rgba(255,194,226,.42)}
+.sh{display:flex;align-items:center;gap:14px;padding:16px 18px;cursor:pointer;user-select:none}
+.node{width:48px;height:48px;flex:0 0 48px;border-radius:13px;display:grid;place-items:center;
+  font-family:var(--mono);font-weight:700;font-size:17px;border:1px solid var(--line);
+  background:rgba(123,79,166,.06);color:var(--dim)}
+.stage.on .node{border-color:var(--pink);color:var(--pink);background:rgba(206,0,88,.08);box-shadow:0 4px 14px rgba(206,0,88,.28)}
+.stage.done .node{border-color:var(--mint);color:var(--mint);background:rgba(232,93,158,.08);box-shadow:0 4px 12px rgba(232,93,158,.25)}
+.sh h3{font-size:20px;font-weight:700;letter-spacing:-.01em}
+.sh p{font-size:15px;color:var(--dim);margin-top:3px}
+.tag{margin-left:auto;font-size:10px;font-family:var(--mono);text-transform:uppercase;letter-spacing:.16em;
+  padding:6px 11px;border-radius:99px;border:1px solid var(--line);color:var(--dim);white-space:nowrap}
+.stage.on .tag{color:var(--pink);border-color:rgba(255,95,168,.5)}
+.stage.done .tag{color:var(--mint);border-color:rgba(255,194,226,.45)}
+.body{display:none;padding:0 18px 20px 72px}
+.stage.open .body{display:block}
+.stageViewer{display:none;position:fixed;inset:0;z-index:200;background:
+  linear-gradient(180deg,#FFFFFF 0%,var(--bg) 45%,#FBEAF3 82%,#F5E3FA 100%);
+  overflow-y:auto;padding:24px 18px 60px}
+.stageViewer.show{display:block}
+.stageViewer .stage{display:none;max-width:900px;margin-left:auto;margin-right:auto}
+.stageViewer .stage.current{display:block}
+.viewerHead{position:relative;z-index:201;display:flex;align-items:center;gap:10px;
+  max-width:900px;margin:0 auto 18px}
+.viewerHead .prog{margin-left:auto}
+.lbBtnSmall,.coachBtnSmall{padding:8px 11px;font-size:14px}
+.backBtn{display:inline-flex;align-items:center;gap:8px;
+  background:none;border:1px solid var(--line);color:var(--dim);border-radius:10px;padding:10px 16px;
+  font-family:var(--mono);font-size:13px;cursor:pointer;transition:border-color .2s,color .2s}
+.backBtn:hover{border-color:var(--mint);color:var(--mint)}
+.viewerHead .prog{font-family:var(--mono);font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--pink)}
+.stage.locked{opacity:.4;pointer-events:none}
+
+.btn{display:inline-flex;align-items:center;gap:9px;padding:14px 24px;border:none;border-radius:12px;
+  cursor:pointer;font-family:var(--hn);font-size:15.5px;font-weight:700;color:#fff;
+  background:linear-gradient(180deg,var(--pink),var(--bupink));border-bottom:4px solid #8A0038;
+  box-shadow:0 6px 18px rgba(206,0,88,.35);transition:transform .07s,box-shadow .25s,filter .2s}
+.btn:hover{filter:brightness(1.08);box-shadow:0 8px 24px rgba(206,0,88,.45)}
+.btn:active{transform:translateY(3px);border-bottom-width:1px}
+.btn.ghost{background:rgba(29,25,33,.04);border-bottom:4px solid rgba(29,25,33,.14);color:var(--text);box-shadow:none}
+.btn.ghost:hover{background:rgba(123,79,166,.1);box-shadow:0 4px 12px rgba(123,79,166,.2)}
+.btn.gold{background:linear-gradient(180deg,#9A6BC2,var(--gold));border-bottom-color:#5A3878;color:#FFFFFF;box-shadow:0 6px 16px rgba(123,79,166,.4)}
+.btn.mint{background:linear-gradient(180deg,#F08CBB,var(--mint));border-bottom-color:#A8305E;color:#FFFFFF;box-shadow:0 6px 16px rgba(232,93,158,.35)}
+.btn.crs{background:linear-gradient(180deg,#2A7BEF,var(--coursera));border-bottom-color:#003B93;box-shadow:0 4px 12px rgba(0,86,210,.3)}
+.btn:disabled,.btn.off{opacity:.36;cursor:not-allowed;box-shadow:none;filter:none}
+.btn.off{pointer-events:none}
+a.btn{text-decoration:none}
+.acts{display:flex;gap:9px;flex-wrap:wrap;margin-top:4px}
+
+.vid{aspect-ratio:16/9;border-radius:12px;border:1px dashed rgba(255,95,168,.42);display:grid;place-items:center;
+  text-align:center;color:var(--dim);background:rgba(255,95,168,.06);margin-bottom:14px;font-size:12.5px}
+.vid b{display:block;color:var(--text);font-size:15px;margin-bottom:3px}
+.pbox{border:1px solid var(--line);border-radius:11px;background:#F7F2FA;padding:14px;margin:10px 0}
+.pbox code{color:var(--mint);font-family:var(--mono);font-size:12.5px}
+ol.steps{counter-reset:s;list-style:none;margin:12px 0 14px}
+ol.steps li{counter-increment:s;position:relative;padding-left:31px;margin-bottom:8px;font-size:13.5px;color:var(--dim)}
+ol.steps li::before{content:counter(s);position:absolute;left:0;top:1px;width:21px;height:21px;border-radius:6px;
+  display:grid;place-items:center;font-family:var(--mono);font-size:10.5px;font-weight:700;
+  background:rgba(255,95,168,.15);color:var(--pink);border:1px solid rgba(255,95,168,.35)}
+textarea{width:100%;padding:11px;border-radius:10px;resize:vertical;background:#FDFBFE;
+  border:1px solid var(--line);color:var(--text);font-family:var(--hn);font-size:13.5px;margin-bottom:11px}
+textarea.mono{font-family:var(--mono);font-size:12.5px;min-height:82px}
+textarea:focus{outline:none;border-color:var(--pink);box-shadow:0 0 0 3px rgba(255,95,168,.14)}
+label.q{display:block;font-size:13.5px;margin:0 0 6px;line-height:1.45}
+label.q i{font-style:normal;color:var(--pink);font-family:var(--mono);font-size:10px;
+  text-transform:uppercase;letter-spacing:.14em;display:block;margin-bottom:3px}
+.err{color:#FF9A9A;font-size:12.5px;margin-bottom:9px;display:none}
+
+.chart{display:none;margin-top:18px;border:1px solid var(--line);border-radius:12px;background:rgba(0,0,0,.34);padding:16px}
+.chart.show{display:block}
+.chart h4{font-size:8.5px;font-family:var(--mono);text-transform:uppercase;letter-spacing:.2em;color:var(--dim);margin-bottom:12px}
+.edge{margin-top:12px;font-size:13.5px;color:var(--dim);line-height:1.5}
+.edge b{color:var(--gold)}
+
+.course.share{border-style:dashed;opacity:.55;position:relative}
+.course.share.ready{opacity:1;border-style:solid;border-color:var(--gold,#C8A24B)}
+.course.share.shared em{color:var(--mint,#3FBF9F)}
+.course.share.rainbow{border-color:transparent;background:rgba(20,16,30,.72)}
+.course.share.rainbow::before{content:'';position:absolute;inset:-2px;border-radius:13px;z-index:-2;
+  background:linear-gradient(120deg,#FF5FA8,#F5A8D8,#FFC2E2,#5C4FE5,#C9A8FF,#FF5FA8);
+  background-size:200% 200%;filter:blur(11px);opacity:.9;animation:rainbowGlow 3.2s ease-in-out infinite}
+.course.share.rainbow::after{content:'';position:absolute;inset:0;border-radius:12px;z-index:-1;
+  padding:1.5px;background:linear-gradient(120deg,#FF5FA8,#F5A8D8,#FFC2E2,#5C4FE5,#C9A8FF,#FF5FA8);
+  background-size:200% 200%;-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);
+  -webkit-mask-composite:xor;mask-composite:exclude;animation:rainbowGlow 3.2s ease-in-out infinite}
+@keyframes rainbowGlow{0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%}}
+@media (prefers-reduced-motion:reduce){.course.share.rainbow::before,.course.share.rainbow::after{animation:none}}
+.course{display:flex;align-items:center;gap:13px;border:1px solid var(--line);border-radius:12px;
+  padding:13px 15px;margin-bottom:10px;background:rgba(123,79,166,.035)}
+.course .dot{width:9px;height:9px;flex:0 0 9px;border-radius:50%;background:#4A4056}
+.course.ready .dot{background:var(--pink);box-shadow:0 0 14px var(--pink)}
+.course.done .dot{background:var(--mint);box-shadow:0 0 14px var(--mint)}
+.course .meta{flex:1;min-width:0}
+.course b{font-size:16.5px;font-weight:700;display:block}
+.course em{font-style:normal;display:block;font-size:10.5px;color:var(--pink);font-family:var(--mono);
+  text-transform:uppercase;letter-spacing:.14em;margin:3px 0 2px}
+.course span{font-size:14px;color:var(--dim)}
+.course .btn{padding:9px 14px;font-size:12px}
+
+.panel{border:1px solid var(--line);border-radius:12px;background:rgba(123,79,166,.045);padding:16px;margin-bottom:12px}
+.panel.dim{opacity:.5}
+.panel h5{font-size:8.5px;font-family:var(--mono);text-transform:uppercase;letter-spacing:.2em;color:var(--lav);margin-bottom:12px}
+.callout{border:1px solid rgba(255,194,226,.45);background:rgba(255,194,226,.09);border-radius:12px;
+  padding:15px 17px;margin-bottom:12px;display:none}
+.callout.show{display:block}
+.callout b{display:block;font-size:15px;margin-bottom:5px;color:var(--mint)}
+.callout p{font-size:13.5px;color:var(--dim);line-height:1.5}
+.hide{display:none}
+
+.summit{text-align:center;padding:6px 0 2px}
+.summit .cup{font-size:46px;filter:drop-shadow(0 0 30px rgba(245,168,216,.8))}
+.summit h3{font-size:23px;margin:8px 0 6px}
+.summit p{color:var(--dim);font-size:14px;max-width:46ch;margin:0 auto 16px;line-height:1.5}
+
+/* ===== peers button ===== */
+.peers{position:fixed;left:20px;bottom:22px;z-index:220;display:inline-flex;align-items:center;gap:9px;
+  padding:12px 17px;border-radius:99px;cursor:pointer;border:1px solid rgba(201,168,255,.5);
+  background:rgba(255,255,255,.92);backdrop-filter:blur(12px);color:var(--text);
+  font-family:var(--hn);font-size:13px;font-weight:700;box-shadow:0 4px 14px rgba(123,79,166,.22);
+  transition:transform .07s,box-shadow .25s}
+.peers:hover{box-shadow:0 6px 18px rgba(123,79,166,.35)}
+.peers:active{transform:translateY(2px)}
+.peers em{font-style:normal;width:8px;height:8px;border-radius:50%;background:var(--mint);
+  box-shadow:0 0 12px var(--mint)}
+
+.toasts{position:fixed;right:20px;bottom:22px;z-index:225;display:flex;flex-direction:column;gap:9px}
+.toast{padding:12px 18px;border-radius:11px;font-weight:700;font-size:12.5px;font-family:var(--mono);
+  text-transform:uppercase;letter-spacing:.1em;
+  background:linear-gradient(180deg,rgba(255,95,168,.96),rgba(194,38,110,.96));
+  border:1px solid rgba(206,0,88,.4);box-shadow:0 6px 20px rgba(206,0,88,.3);
+  animation:pop .35s cubic-bezier(.2,1.4,.3,1)}
+.toast.m{background:linear-gradient(180deg,rgba(255,194,226,.96),rgba(20,160,135,.96));border-color:rgba(150,255,235,.65);color:#052A23}
+.toast.g{background:linear-gradient(180deg,rgba(255,218,92,.97),rgba(200,150,0,.97));border-color:rgba(255,240,180,.7);color:#2A2000}
+@keyframes pop{from{opacity:0;transform:translateY(16px) scale(.94)}to{opacity:1;transform:none}}
+
+.foot{margin-top:30px;text-align:center;font-size:11px;color:var(--dim);line-height:1.8}
+.foot a{color:var(--lav);text-decoration:none}
+.foot a:hover{text-decoration:underline}
+.foot .mono{font-family:var(--mono);text-transform:uppercase;letter-spacing:.18em;font-size:8.5px;display:block;margin-top:6px}
+</style>
+</head>
+<body>
+<div class="sky"></div>
+<div class="aurora"><span></span><span></span><span></span></div>
+<svg class="stars" aria-hidden="true"></svg>
+<div class="mist"><i></i><i></i></div>
+<div class="snow" id="snow" aria-hidden="true"></div>
+<div class="shapes3d" aria-hidden="true">
+  <i class="sh1"><b></b></i><i class="sh2"><b></b></i><i class="sh3"><b></b></i>
+  <i class="sh4"><b></b></i><i class="sh5"><b></b></i>
+</div>
+
+<header class="hud">
+  <div class="brand"><b>BU Learning</b><i>The Loom</i></div>
+  <div class="stat"><u>Threads</u><b id="hXp" class="p">0 XP</b></div>
+  <div class="stat"><u>Checkpoint</u><b id="hStep">0/5</b></div>
+  <div class="bar"><i id="hBar"></i></div>
+  <button class="lbBtn" id="lbBtn">🏆 Leaderboard</button>
+  <button class="coachBtn" id="coachBtn">🤖 AI Coach</button>
+  <div class="me">
+    <div class="who"><b id="meName">—</b></div>
+    <div class="av" id="meAv">—</div>
+  </div>
+</header>
+
+<main class="wrap">
+  <h1>Weave your <em>RANGE</em>.</h1>
+  <p class="sub">Map a real process, find where AI belongs in it, and build a repeatable Claude Project or workflow that someone else can run without you. Five checkpoints from the first pattern to a finished tapestry.</p>
+
+  <div class="map" id="mapBox">
+    <span class="prog" id="mapProg"></span>
+    <img src="loom-map-plate.png" alt="The Loom route across six checkpoints" class="mapBg" id="plate">
+    <svg id="layer" viewBox="0 0 1000 555" preserveAspectRatio="none" aria-label="Milestone route"></svg>
+    <div class="mCard" id="mCard"></div>
+  </div>
+
+  
+
+  <p class="foot">
+    Stuck or curious? <a href="#" id="slackLink">Ask your peers in Slack</a> — channel link coming.<br>
+    Built by BU L&amp;D. Suggestions or questions: <a href="mailto:bu.learning@betterup.co">bu.learning@betterup.co</a>
+    <span class="mono">We track progress and page activity to improve the programme</span>
+  </p>
+</main>
+<div id="stageViewer" class="stageViewer" aria-hidden="true">
+    <div class="viewerHead">
+      <button id="backToRoute" class="backBtn">← Back to route</button>
+      <span class="prog" id="viewerProg"></span>
+      <button class="lbBtn lbBtnSmall">🏆</button>
+      <button class="coachBtn coachBtnSmall">🤖</button>
+    </div>
+  <section class="stage on open current" id="s1">
+    <div class="sh"><div class="node">01</div>
+      <div><h3>The pattern</h3><p>Before you weave anything, see where automation actually belongs</p></div>
+      <span class="tag">3 min</span></div>
+    <div class="body">
+      <div class="vid"><div><b>Explainer video</b>Why automation fails when it skips the map · 3 min · placeholder</div></div>
+      <p class="edge" style="margin-bottom:12px">Program 3 · Augment and Automate Your Business. Outcome: map a real process, identify where AI belongs, and build a repeatable Claude Project or workflow that someone else can run without you.</p>
+      <div class="acts"><button class="btn" data-next="1">I've watched it — continue</button></div>
+    </div>
+  </section>
+
+  <section class="stage locked" id="s2">
+    <div class="sh"><div class="node">02</div>
+      <div><h3>Thread your bearings</h3><p>Run the RANGE evaluator in your own Claude, then bring the score back — optional, you can skip and do it later</p></div>
+      <span class="tag">5 min</span></div>
+    <div class="body">
+      <ol class="steps"><li>Copy the prompt below.</li><li>Open Claude, paste it, let it run.</li>
+        <li>Copy the Score Card line it gives you.</li><li>Paste it back here.</li></ol>
+      <div class="pbox"><code id="pTxt">evaluate my RANGE</code></div>
+      <button class="btn ghost" id="pCopy">Copy the prompt</button>
+      <div style="height:16px"></div>
+      <textarea class="mono" id="scoreIn" placeholder="RANGE | 2026-09-01 | R:2 A:2 N:1 G:2 EF:3 | Total:10/25 | first run"></textarea>
+      <div class="err" id="scoreErr">Couldn't read that. Paste the line beginning with RANGE, including R: A: N: G: EF: values.</div>
+      <button class="btn" id="scoreGo">Plot my bearings</button>
+      <button class="btn ghost" id="rangeSkip" data-next="2">Skip for now — continue without a score</button>
+      <p class="edge" style="margin-top:8px">Optional: you can run the evaluator any time and come back to plot it.</p>
+      <div class="chart" id="chartWrap">
+        <h4>Your RANGE profile</h4>
+        <svg id="chart" viewBox="0 0 620 250" aria-label="RANGE profile chart"></svg>
+        <p class="edge" id="edgeTxt"></p>
+        <div class="acts"><button class="btn" data-next="2">Got it — continue</button></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="stage locked" id="s3">
+    <div class="sh"><div class="node">03</div>
+      <div><h3>Two weaves</h3><p>Critical — clear both before the warp opens</p></div>
+      <span class="tag">8 hrs</span></div>
+    <div class="body">
+      <div class="course ready" id="c1"><span class="dot"></span>
+        <div class="meta"><em>Weave 01 · Spot &amp; sustain</em>
+          <b>Applying GenAI Tools for Process Automation</b>
+          <span>SkillUp · 6 hrs · 4.7 — identify high-impact automation opportunities, design multi-step workflows, chain prompting, error handling, monitoring and fallback plans, combine multiple AI services end to end, measure automation performance</span></div>
+        <div class="acts"><a class="btn crs" id="c1open" data-ev="open-c1" target="_blank" rel="noopener" href="https://www.coursera.org/learn/applying-genai-tools-for-process-automation">Open</a>
+          <button class="btn ghost" data-course="c1">Cleared</button></div></div>
+      <div class="course share" id="sh1"><span class="dot"></span>
+        <div class="meta"><em>Optional · Share your milestone</em>
+          <b>Earned your Weave 01 certificate?</b>
+          <span>Share it with your manager, L&amp;D or your team — it's a milestone worth showing. Entirely optional, never required.</span></div>
+        <div class="acts"><button class="btn ghost" data-share="sh1" data-cn="Applying GenAI Tools for Process Automation" disabled>Share via Gmail</button></div></div>
+      <div class="course" id="c2"><span class="dot"></span>
+        <div class="meta"><em>Weave 02 · Build the loom</em>
+          <b>AI Automation with Claude</b>
+          <span id="c2s">AWIT + Anthropic · 2 hrs · 4.8 — opens once the first weave is cleared</span></div>
+        <div class="acts"><a class="btn crs off" id="c2open" data-ev="open-c2">Open</a>
+          <button class="btn ghost" data-course="c2" disabled>Locked</button></div></div>
+      <div class="course share" id="sh2"><span class="dot"></span>
+        <div class="meta"><em>Optional · Share your milestone</em>
+          <b>Earned your Weave 02 certificate?</b>
+          <span>Share it with your manager, L&amp;D or your team — it's a milestone worth showing. Entirely optional, never required.</span></div>
+        <div class="acts"><button class="btn ghost" data-share="sh2" data-cn="AI Automation with Claude" disabled>Share via Gmail</button></div></div>
+      <div class="acts hide" id="n3"><button class="btn" data-next="3">Both cleared — continue</button></div>
+    </div>
+  </section>
+
+  <section class="stage locked" id="s4">
+    <div class="sh"><div class="node">04</div>
+      <div><h3>The warp</h3><p>Core — map before you automate</p></div>
+      <span class="tag">4 hrs</span></div>
+    <div class="body">
+      <div class="course ready" id="c3"><span class="dot"></span>
+        <div class="meta"><em>The warp · Map before you automate</em><b>Business Process Modeling with AI</b>
+          <span>Starweaver · 4 hrs · 4.7 — the BPM lifecycle and how AI enhances each phase, AI tools for flowcharting and workflow automation, apply Lean, Six Sigma and TQM with AI, analyze, redesign and automate processes</span></div>
+        <div class="acts"><a class="btn crs" id="c3open" data-ev="open-c3" target="_blank" rel="noopener" href="https://www.coursera.org/learn/business-process-modeling-with-ai">Open</a>
+          <button class="btn ghost" data-course="c3">Cleared</button></div></div>
+      <div class="acts hide" id="n4"><button class="btn" data-next="4">Continue to solo weave</button></div>
+    </div>
+  </section>
+
+  <section class="stage locked" id="s5">
+    <div class="sh"><div class="node">05</div>
+      <div><h3>Solo weave</h3><p>Apply it to a real process</p></div>
+      <span class="tag">Mission</span></div>
+    <div class="body">
+      <div class="panel" id="applyPanel">
+        <h5>Apply — before you set off</h5>
+        <p class="edge" style="margin:-4px 0 12px">All three are optional — write as much or as little as you like, and you can come back and edit any time.</p>
+        <label class="q"><i>01</i>What's one process in your work that could be automated or augmented — and which task will you try it on?</label>
+        <textarea rows="2" data-f="a1" placeholder="Type your answer here..."></textarea>
+        <label class="q"><i>02</i>What will you build — a Claude Project, a workflow, a repeatable prompt chain?</label>
+        <textarea rows="2" data-f="a2" placeholder="Type your answer here..."></textarea>
+        <label class="q"><i>03</i>How will you know it worked — and who else could run it without you?</label>
+        <textarea rows="2" data-f="a3" placeholder="Type your answer here..."></textarea>
+        <div class="acts"><button class="btn" id="applyGo">Save and continue</button></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="stage locked" id="s6">
+    <div class="sh"><div class="node">★</div>
+      <div><h3>Tapestry</h3><p>Pattern complete</p></div><span class="tag">Complete</span></div>
+    <div class="body">
+      <div class="summit"><div class="cup">🧵</div><h3>You wove the tapestry</h3>
+        <p>You didn't just finish the courses — you put it to work. Log what you built so other people can see what's possible.</p>
+        <button class="btn gold" data-ev="log-build">Log your build in #ai-builds</button></div>
+      <div style="height:14px"></div>
+      <div class="acts" style="margin-top:14px"><button class="btn" data-next="6">Continue to reflection</button></div>
+    </div>
+  </section>
+
+  <section class="stage locked" id="s7">
+    <div class="sh"><div class="node">✎</div>
+      <div><h3>Reflect</h3><p>How did it go once you tried it for real?</p></div>
+      <span class="tag">Optional</span></div>
+    <div class="body">
+      <div class="panel" id="reflectPanel">
+        <h5>Reflect — whenever you've had a go</h5>
+        <p class="edge" style="margin:-4px 0 12px">Both are optional — half-finished counts. You can save now and edit later.</p>
+        <label class="q"><i>01</i>What did you actually try, and what did you create or change?</label>
+        <textarea rows="2" data-f="r1" placeholder="Type your answer here..."></textarea>
+        <label class="q"><i>02</i>What worked, where did you get stuck, and what would you try next?</label>
+        <textarea rows="2" data-f="r2" placeholder="Type your answer here..."></textarea>
+        <div class="acts">
+          <button class="btn gold" data-next="7">Log my reflection</button>
+          <button class="btn ghost" id="reflectSkip">Skip for now — I'll reflect later</button>
+        </div>
+        <p class="edge" id="reflectSkipNote" style="display:none;margin-top:8px">
+          An email draft to bu.learning@betterup.co is ready in your mail app — send it whenever, no rush.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="stage locked" id="s8">
+    <div class="sh"><div class="node">✉</div>
+      <div><h3>Share your system</h3><p>One click — tell BU Learning what you automated, so it's logged and others can find it</p></div>
+      <span class="tag">30 sec</span></div>
+    <div class="body">
+      <div class="acts"><button class="btn mint" id="doneMail">Share what I built</button></div>
+      <div class="callout" id="mailOk"><b>Sent.</b>
+        <p>BU Learning has what you built — thank you for making it findable for someone else.</p></div>
+    </div>
+  </section>
+  </div>
+
+
+<button class="peers" id="peersBtn"><em></em> Ask your peers</button>
+<div id="coachDrawer" aria-hidden="true">
+  <h3>🤖 ASK YOUR AI COACH</h3>
+  <p class="lbnote">Stuck on anything in this program? Write your question below, then take it to your own Claude — this doesn't send it anywhere, it just helps you frame it clearly.</p>
+  <textarea id="coachQ" rows="4" placeholder="e.g. I'm not sure what my RANGE score actually means, or how to write a prompt for my own work..."></textarea>
+  <button class="btn" id="coachCopy">Copy question for Claude</button>
+  <a class="btn ghost" id="coachOpen" href="https://claude.ai" target="_blank" rel="noopener" style="margin-top:9px;width:100%;justify-content:center;text-decoration:none">Open Claude ↗</a>
+  <p class="edge" style="margin-top:10px">Paste it in, ask away, and come back here anytime — your progress is saved.</p>
+  <button id="coachClose">Close</button>
+</div>
+<div id="lbDrawer" aria-hidden="true">
+  <h3>🏆 WEAVER RANKINGS</h3>
+  <p class="lbnote">Top weavers across The Loom, by threads (XP). Your name is visible to fellow weavers once you've made progress.</p>
+  <div id="lbList"></div>
+  <button id="lbClose">Close</button>
+</div>
+<div class="toasts" id="toasts"></div>
+
+<script>
+/* ===================================================================
+   WIRING FOR APPS SCRIPT — set API to your /exec URL when deployed.
+   Leave null to run standalone (progress saved in this browser only).
+   =================================================================== */
+const API='https://script.google.com/macros/s/AKfycbwhQ2-lyLIVj--aVVCW3OSHVDc1-N08f02NyLoSZak-bvzYSGx5PUXFyjvsJEgRlm2zmQ/exec';
+const GAME='augment-automate'; // routes data to the "AAB — …" tabs in the shared sheet
+function whoAmI(){
+  try{const saved=JSON.parse(localStorage.getItem('aab:whoami')||'null');
+    if(saved&&saved.email&&saved.name)return saved;}catch(e){}
+  if(window.BU_USER&&window.BU_USER.email)
+    return {name:window.BU_USER.name||window.BU_USER.email.split('@')[0],email:window.BU_USER.email};
+  const nRaw=prompt('Welcome to The Loom \u2014 what\u2019s your name?');
+  const name=(nRaw||'').trim()||'Guest';
+  const eRaw=prompt('And your BetterUp email address?');
+  let email=(eRaw||'').trim();
+  if(!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email))email='guest+'+Date.now()+'@test.local';
+  const who={name:name,email:email};
+  try{localStorage.setItem('aab:whoami',JSON.stringify(who));}catch(e){}
+  return who;
+}
+const ME=whoAmI();
+const USER={name:ME.name,email:ME.email};
+
+/* ---------- snow ---------- */
+(function(){let h='';for(let i=0;i<34;i++){
+  const s=Math.random()*2.4+1.2;
+  h+=`<b style="left:${Math.random()*100}%;width:${s}px;height:${s}px;
+      animation-duration:${Math.random()*16+14}s;animation-delay:-${Math.random()*24}s;
+      opacity:${Math.random()*.4+.25}"></b>`;}
+  document.getElementById('snow').innerHTML=h;})();
+(function(){let h='';for(let i=0;i<90;i++){
+  h+=`<circle cx="${Math.random()*100}%" cy="${Math.random()*56}%" r="${Math.random()*1.3+.3}"
+      fill="#F4F3E9" style="animation-delay:-${Math.random()*5}s"/>`;}
+  document.querySelector('.stars').innerHTML=h;})();
+
+/* ---------- identity ---------- */
+(function(){
+  const mail=USER.email, name=USER.name||mail.split('@')[0].replace(/[._-]+/g,' ')
+    .replace(/\b\w/g,c=>c.toUpperCase());
+  const ini=name.split(' ').filter(Boolean).slice(0,2).map(w=>w[0]).join('').toUpperCase()||'BU';
+  document.getElementById('meName').textContent=name;
+  document.getElementById('meAv').textContent=ini;
+})();
+
+/* ---------- sound ---------- */
+/* sound removed — ping kept as a no-op so all call sites still work */
+function ping(){}
+
+/* ---------- state + persistence ---------- */
+const KEY='aab:'+USER.email;
+const S={xp:0,cleared:{},courses:{},range:null,fields:{},applied:false,reflectOpen:false,mailed:false,shares:{},opened:{}};
+function save(){
+  try{localStorage.setItem(KEY,JSON.stringify(S));}catch(e){}
+  if(API)post('save',{state:S});
+}
+function load(){
+  try{const r=localStorage.getItem(KEY);if(r)Object.assign(S,JSON.parse(r));}catch(e){}
+}
+
+/* ---------- analytics ---------- */
+const SESSION=Math.random().toString(36).slice(2,10);
+const T0=Date.now();let visible=0,lastTick=Date.now(),queue=[];
+function ev(type,target,extra){
+  queue.push({email:USER.email,name:USER.name,session:SESSION,ts:new Date().toISOString(),
+    type:type,target:target||'',step:Object.keys(S.cleared).length,
+    secs:Math.round(visible/1000),extra:extra||''});
+  if(queue.length>=12)flush();
+}
+function flush(){
+  if(!queue.length)return;
+  const batch=queue.slice();queue=[];
+  if(!API)return; /* no API configured yet — queue is silently dropped, nothing logged to console */
+  post('events',{events:batch});
+}
+function post(action,payload){
+  try{
+    fetch(API,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},
+      body:JSON.stringify(Object.assign({action:action,game:GAME,email:USER.email,name:USER.name,session:SESSION},payload))});
+  }catch(e){}
+}
+setInterval(()=>{const n=Date.now();
+  if(document.visibilityState==='visible')visible+=n-lastTick;lastTick=n;},1000);
+setInterval(flush,20000);
+document.addEventListener('visibilitychange',()=>{
+  ev(document.visibilityState==='visible'?'focus':'blur');if(document.visibilityState!=='visible')flush();});
+window.addEventListener('beforeunload',()=>{ev('session-end','',Math.round(visible/1000));flush();});
+document.addEventListener('click',e=>{
+  const b=e.target.closest('button,a');if(!b)return;
+  ev('click',b.dataset.ev||b.dataset.next||b.dataset.course||b.id||b.textContent.trim().slice(0,32));
+},true);
+
+/* ---------- ui ---------- */
+const XP={1:100,2:150,3:400,4:200,5:350,6:200,7:150,8:100};
+const DIMS=[['Reach','R'],['Autonomy','A'],['Navigation','N'],['Generalization','G'],['Execution','EF']];
+const PTS=[[92,268],[268,214],[430,178],[598,132],[730,96],[832,52]];
+const SEG=[
+  'M92,268 C170,252 210,224 268,214',
+  'M268,214 C326,204 380,196 430,178',
+  'M430,178 C480,160 540,152 598,132',
+  'M598,132 C656,112 700,112 730,96',
+  'M730,96 C760,80 810,72 832,52'
+];
+
+function toast(m,k){const d=document.createElement('div');
+  d.className='toast'+(k===1?' g':k===2?' m':'');d.textContent=m;
+  document.getElementById('toasts').appendChild(d);
+  setTimeout(()=>{d.style.transition='opacity .4s,transform .4s';d.style.opacity=0;d.style.transform='translateY(10px)';},2200);
+  setTimeout(()=>d.remove(),2700);}
+function setXp(){document.getElementById('hXp').textContent=S.xp+' XP';}
+function addXp(n){S.xp+=n;setXp();toast('+'+n+' XP');save();}
+
+/* Checkpoint centers as % of the background image — measured directly against loom-map-bg.png */
+/* Six milestones, one per clickable stage (s1..s6). Positions are % of the plate. */
+const MAPPTS=[
+ {id:1, label:'SPOOL',    fx:9,  fy:80, icon:'home',    hue:'#FF2E9A', desc:'The pattern — see where automation belongs.'},
+ {id:2, label:'02',       fx:26, fy:70, icon:'compass', hue:'#B14DFF', desc:'Thread your bearings — run the RANGE evaluator.'},
+ {id:3, label:'03',       fx:44, fy:62, icon:'chest',   hue:'#FF3DA6', desc:'Two weaves — clear both critical courses.'},
+ {id:4, label:'04',       fx:62, fy:52, icon:'ship',    hue:'#D08BFF', desc:'The warp — map before you automate.'},
+ {id:5, label:'05',       fx:79, fy:43, icon:'gem',     hue:'#7C5CFF', desc:'Solo weave — apply it to a real process.'},
+ {id:6, label:'TAPESTRY', fx:89, fy:22, icon:'flag',    hue:'#FF1F8F', desc:'Weave it all together to create impact.'}
+];
+MAPPTS.forEach(m=>{m.x=m.fx*10; m.y=m.fy*5.55;});
+
+function mGlyph(kind,cx,cy,op){
+  const W='#FFFFFF', f=`fill="${W}" opacity="${op}"`;
+  const st=(d,w)=>`<path d="${d}" fill="none" stroke="${W}" stroke-width="${w||2}" stroke-linecap="round" stroke-linejoin="round" opacity="${op}"/>`;
+  switch(kind){
+    case'home':return st(`M${cx-9},${cy+1} L${cx},${cy-8} L${cx+9},${cy+1}`,2.2)+
+      `<rect x="${cx-6}" y="${cy}" width="12" height="9" rx="1.5" ${f}/>`+
+      `<rect x="${cx-2}" y="${cy+3.5}" width="4" height="5.5" fill="#2A1030" opacity="${op}"/>`;
+    case'compass':return `<circle cx="${cx}" cy="${cy}" r="9.5" fill="none" stroke="${W}" stroke-width="2" opacity="${op}"/>`+
+      `<path d="M${cx-4},${cy+4.5} L${cx+2},${cy-5} L${cx+4},${cy-4} L${cx-2},${cy+5.5} Z" ${f}/>`;
+    case'chest':return `<path d="M${cx-9.5},${cy-2} Q${cx},${cy-11} ${cx+9.5},${cy-2} Z" ${f}/>`+
+      `<rect x="${cx-9.5}" y="${cy-1.5}" width="19" height="9.5" rx="1.5" ${f}/>`+
+      `<rect x="${cx-1.6}" y="${cy-4}" width="3.2" height="6" fill="#2A1030" opacity="${op}"/>`;
+    case'ship':return st(`M${cx-10},${cy+3.5} Q${cx},${cy+11} ${cx+10},${cy+3.5}`,2.2)+
+      st(`M${cx-1},${cy+3} L${cx-1},${cy-11}`,2)+
+      `<path d="M${cx+0.5},${cy-10.5} L${cx+9},${cy-2.5} L${cx+0.5},${cy-1} Z" ${f}/>`+
+      `<path d="M${cx-2.5},${cy-8} L${cx-9},${cy-2.5} L${cx-2.5},${cy-1} Z" ${f}/>`;
+    case'gem':return `<path d="M${cx-9},${cy-3} L${cx-5},${cy-8} L${cx+5},${cy-8} L${cx+9},${cy-3} L${cx},${cy+8} Z" ${f}/>`+
+      `<path d="M${cx-9},${cy-3} L${cx+9},${cy-3} M${cx-5},${cy-8} L${cx},${cy-3} L${cx+5},${cy-8}"
+        fill="none" stroke="#2A1030" stroke-width="1.1" opacity="${op}"/>`;
+    case'flag':return st(`M${cx-4},${cy+9} L${cx-4},${cy-9}`,2.2)+
+      `<path class="flagCloth" d="M${cx-4},${cy-9} L${cx+9},${cy-5} L${cx-4},${cy-1} Z" ${f}/>`;
+  }
+}
+/* Catmull-Rom through neighbouring points -> cubic bezier, so joins stay smooth */
+function mSeg(i){
+  const A=MAPPTS, p0=A[Math.max(i-1,0)], p1=A[i], p2=A[i+1], p3=A[Math.min(i+2,A.length-1)];
+  return `M${p1.x},${p1.y} C${p1.x+(p2.x-p0.x)/6},${p1.y+(p2.y-p0.y)/6} `+
+         `${p2.x-(p3.x-p1.x)/6},${p2.y-(p3.y-p1.y)/6} ${p2.x},${p2.y}`;
+}
+function mWalker(cx,cy){
+  return `<g class="walker">
+    <path class="scarf" d="M${cx-2},${cy-13} q-10,2 -14,7.5" fill="none" stroke="#FF5FA8" stroke-width="2.6" stroke-linecap="round"/>
+    <circle cx="${cx}" cy="${cy-15.5}" r="3.6" fill="#FFF3FA"/>
+    <path d="M${cx},${cy-12} L${cx},${cy-4} M${cx},${cy-9.5} L${cx-5},${cy-6} M${cx},${cy-9.5} L${cx+5},${cy-11.5}
+      M${cx},${cy-4} L${cx-4.5},${cy+3.5} M${cx},${cy-4} L${cx+4.5},${cy+3.5}"
+      fill="none" stroke="#FFF3FA" stroke-width="2.1" stroke-linecap="round"/>
+    <rect x="${cx-7}" y="${cy-12.5}" width="5.2" height="7" rx="1.7" fill="#C9A8FF"/>
+  </g>`;
+}
+function showMCard(i){
+  const m=MAPPTS[i], box=document.getElementById('mapBox'), card=document.getElementById('mCard');
+  if(!box||!card)return;
+  const n=Object.keys(S.cleared).length;
+  const st=i<n?['Completed','ms-done']:i===n?['Current','ms-live']:['Locked','ms-lock'];
+  card.innerHTML=`<div class="num">${m.label}</div><h4>${m.label==='SPOOL'?'Spool':m.label==='TAPESTRY'?'Tapestry':'Checkpoint '+m.label}</h4>`+
+    `<p>${m.desc}</p><span class="state ${st[1]}">${st[0]}</span>`;
+  const r=box.getBoundingClientRect();
+  let left=(m.x/1000)*r.width+34, top=(m.y/555)*r.height-28;
+  if(left+256>r.width) left=(m.x/1000)*r.width-260;
+  if(top<8) top=8;
+  if(top+160>r.height) top=r.height-160;
+  card.style.left=left+'px'; card.style.top=top+'px';
+  card.classList.add('show');
+  clearTimeout(showMCard._t);
+  showMCard._t=setTimeout(()=>card.classList.remove('show'),4200);
+}
+function drawMap(){
+  const svg=document.getElementById('layer');if(!svg)return;
+  const A=MAPPTS, n=Object.keys(S.cleared).length;
+  let h=`<defs>
+    <filter id="pathGlow" x="-60%" y="-60%" width="220%" height="220%">
+      <feGaussianBlur stdDeviation="3.2" result="b"/><feMerge>
+      <feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+    <linearGradient id="rainbow" gradientUnits="userSpaceOnUse"
+      x1="${A[0].x}" y1="${A[0].y}" x2="${A[A.length-1].x}" y2="${A[A.length-1].y}">
+      <stop offset="0%" stop-color="#FF2E9A"/><stop offset="22%" stop-color="#FF3DA6"/>
+      <stop offset="44%" stop-color="#C44DFF"/><stop offset="66%" stop-color="#8B5CFF"/>
+      <stop offset="84%" stop-color="#5B7BFF"/><stop offset="100%" stop-color="#FF1F8F"/>
+    </linearGradient>
+    ${A.map((m,i)=>`<radialGradient id="mhalo${i}">
+      <stop offset="0%" stop-color="${m.hue}" stop-opacity=".8"/>
+      <stop offset="100%" stop-color="${m.hue}" stop-opacity="0"/></radialGradient>
+      <filter id="mglow${i}" x="-90%" y="-90%" width="280%" height="280%">
+      <feDropShadow dx="0" dy="0" stdDeviation="4.5" flood-color="${m.hue}" flood-opacity=".95"/></filter>`).join('')}
+  </defs>`;
+
+  for(let i=0;i<A.length-1;i++)
+    h+=`<path class="seg ${i<n?'segDone':'segTodo'}" d="${mSeg(i)}"/>`;
+
+  A.forEach((m,i)=>{
+    const isDone=i<n, isLive=i===n, isLock=i>n;
+    const col=isLock?'#8E7FA8':m.hue, R=isLive?27:23, op=isLock?.58:1;
+    if(!isLock) h+=`<circle class="halo${isLive?' breathe':''}" cx="${m.x}" cy="${m.y}" r="${R+13}"
+      fill="url(#mhalo${i})" opacity="${isLive?.3:.2}"/>`;
+    if(isLive) h+=`<circle class="pulseA" cx="${m.x}" cy="${m.y}" r="${R}" fill="none" stroke="${col}" stroke-width="2.4"/>
+      <circle class="pulseB" cx="${m.x}" cy="${m.y}" r="${R}" fill="none" stroke="#FFFFFF" stroke-width="1.6" opacity=".8"/>`;
+    if(i===A.length-1&&!isLock)
+      h+=`<circle class="sparkle" cx="${m.x-26}" cy="${m.y-16}" r="1.9" fill="#FFE9F6"/>
+          <circle class="sparkle" cx="${m.x+27}" cy="${m.y-6}" r="1.6" fill="#FFE9F6" style="animation-delay:-.9s"/>
+          <circle class="sparkle" cx="${m.x+6}" cy="${m.y-31}" r="1.7" fill="#FFE9F6" style="animation-delay:-1.7s"/>`;
+    h+=`<g class="mNode" tabindex="0" role="button" data-go="${m.id}" data-i="${i}" aria-label="Checkpoint ${m.label}">
+      <circle cx="${m.x}" cy="${m.y}" r="${R}" fill="rgba(24,10,38,.62)" stroke="${col}"
+        stroke-width="${isLive?3.4:2.8}" ${isLock?'':`filter="url(#mglow${i})"`} opacity="${op}"/>
+      <circle cx="${m.x}" cy="${m.y}" r="${R-6}" fill="none" stroke="${col}" stroke-width="1.4" opacity="${op*.75}"/>
+      ${mGlyph(m.icon,m.x,m.y,op)}
+      <text x="${m.x}" y="${m.y+R+17}" text-anchor="middle" font-family="Roboto Mono,monospace" font-size="11.5"
+        letter-spacing="2.2" fill="#12081C" stroke="#12081C" stroke-width="4" stroke-linejoin="round" opacity=".8">${m.label}</text>
+      <text x="${m.x}" y="${m.y+R+17}" text-anchor="middle" font-family="Roboto Mono,monospace" font-size="11.5"
+        letter-spacing="2.2" fill="${isLock?'#9C90AE':(i===A.length-1?'#FF7FB8':'#FFFFFF')}">${m.label}</text>
+      <circle class="hit" cx="${m.x}" cy="${m.y}" r="${R+13}"/>
+    </g>`;
+  });
+  if(n<A.length) h+=mWalker(A[n].x-40, A[n].y+8);
+
+  svg.innerHTML=h;
+  svg.querySelectorAll('.mNode').forEach(g=>{
+    const open=()=>{
+      const id='s'+g.dataset.go, el=document.getElementById(id);
+      if(!el||el.classList.contains('locked')){ping(200);showMCard(+g.dataset.i);
+        toast('Locked — clear the checkpoint first');return;}
+      ping(600);openOnly(id);ev('map-jump',id);
+    };
+    g.addEventListener('click',open);
+    g.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();open();}});
+  });
+}
+function refresh(){const n=Object.keys(S.cleared).length;
+  document.getElementById('hStep').textContent=Math.min(n,5)+'/5';
+  document.getElementById('hBar').style.width=(n/6*100)+'%';drawMap();
+  const label=n===0?'Start at the Spool':n>=6?'Tapestry':String(n).padStart(2,'0')+' → '+String(n+1).padStart(2,'0');
+  const prog=document.getElementById('mapProg');if(prog)prog.textContent=label;
+  const vprog=document.getElementById('viewerProg');if(vprog)vprog.textContent=label;
+}
+function burstAt(idx){
+  const p0=MAPPTS[idx];if(!p0)return;
+  const p=[p0.x,p0.y];
+  const svg=document.getElementById('layer');if(!svg)return;
+  const cols=['#FF5FA8','#F5A8D8','#FFC2E2','#C9A8FF'];
+  let bh=`<g class="burstGroup">
+    <circle class="burstRing" cx="${p[0]}" cy="${p[1]}" r="10" fill="none" stroke="#F5A8D8" stroke-width="2"/>`;
+  for(let k=0;k<10;k++){
+    const ang=(k/10)*Math.PI*2, dist=26+Math.random()*14;
+    const bx=Math.cos(ang)*dist, by=Math.sin(ang)*dist;
+    bh+=`<circle class="burstDot" style="--bx:${bx}px;--by:${by}px" cx="${p[0]}" cy="${p[1]}" r="${2+Math.random()*1.6}"
+      fill="${cols[k%cols.length]}"/>`;
+  }
+  bh+='</g>';
+  const wrap=document.createElementNS('http://www.w3.org/2000/svg','g');
+  wrap.innerHTML=bh; svg.appendChild(wrap);
+  setTimeout(()=>wrap.remove(),900);
+}
+
+function advance(id,silent){
+  const already=!!S.cleared[id]; /* revisiting an already-cleared checkpoint: still navigate forward, just skip the first-time celebration */
+  if(!already){S.cleared[id]=1;if(!silent){ping(680);addXp(XP[id]||200);ev('clear','stage-'+id);}}
+  const el=document.getElementById('s'+id);
+  el.classList.remove('on');el.classList.add('done');if(!silent)el.classList.remove('open');
+  const nx=document.getElementById('s'+(id+1));
+  if(nx){nx.classList.remove('locked');nx.classList.add('on');} /* unlocked, not auto-opened — reach it via the route */
+  if(id===6&&!silent&&!already)toast('Tapestry complete',1); /* Tapestry is now its own step */
+  refresh();save();
+  if(!silent&&!already)burstAt(Math.min(id-1,5));
+  if(!silent){
+    if(nx)setTimeout(()=>openOnly('s'+(id+1)),240); /* every step flows straight into the next */
+    if(!already&&id<6)toast('Next checkpoint unlocked',2);}
+}
+document.querySelectorAll('[data-next]').forEach(b=>b.addEventListener('click',()=>{
+  advance(+b.dataset.next);}));
+const STAGE_LABEL={s1:'SPOOL',s2:'02',s3:'03',s4:'04',s5:'05',s6:'TAPESTRY',s7:'REFLECT',s8:'SHARE'};
+function openOnly(id){
+  document.querySelectorAll('.stage.open').forEach(s=>{if(s.id!==id)s.classList.remove('open');});
+  document.querySelectorAll('.stage.current').forEach(s=>{if(s.id!==id)s.classList.remove('current');});
+  const el=document.getElementById(id);if(el){el.classList.add('open');el.classList.add('current');}
+  const viewer=document.getElementById('stageViewer');
+  if(viewer){viewer.classList.add('show');viewer.scrollTop=0;}
+  const vprog=document.getElementById('viewerProg'); /* reflect the stage actually being viewed, not just overall progress */
+  if(vprog&&STAGE_LABEL[id])vprog.textContent=STAGE_LABEL[id];
+}
+document.getElementById('backToRoute').addEventListener('click',()=>{
+  ping(300);document.getElementById('stageViewer').classList.remove('show');ev('back-to-route');});
+document.querySelectorAll('.sh').forEach(h=>h.addEventListener('click',()=>{
+  const s=h.parentElement;if(s.classList.contains('locked'))return;ping(420);
+  if(s.classList.contains('open'))s.classList.remove('open');else openOnly(s.id);}));
+
+function markCourse(k,silent){
+  const row=document.getElementById(k),b=row.querySelector('[data-course]');
+  S.courses[k]=1;row.classList.remove('ready');row.classList.add('done');
+  b.textContent='Done';b.disabled=true;
+  if(!silent){ping(720);addXp(120);ev('course-done',k);}
+  if(k==='c1')enableShare('sh1');
+  if(k==='c2')enableShare('sh2');
+  if(k==='c1'){const r=document.getElementById('c2');r.classList.add('ready');
+    r.querySelectorAll('button').forEach(x=>x.disabled=false);
+    const a=document.getElementById('c2open');
+    a.classList.remove('off');a.target='_blank';a.rel='noopener';
+    a.href='https://www.coursera.org/learn/ai-for-everyone-ai-automation-with-claude';
+    r.querySelector('[data-course]').textContent='Cleared';
+    document.getElementById('c2s').textContent='AWIT + Anthropic · 2 hrs · 4.8 — Claude Projects for repeatable tasks, automate deliverables across any input, upload sources of truth for RAG, extend to multimodal';
+    if(!silent)toast('Second weave open',2);}
+  if(S.courses.c1&&S.courses.c2)document.getElementById('n3').classList.remove('hide');
+  if(k==='c3')document.getElementById('n4').classList.remove('hide');
+  save();
+}
+document.querySelectorAll('[data-course]').forEach(b=>b.addEventListener('click',()=>markCourse(b.dataset.course)));
+
+/* ---------- certificate sharing (optional, pride not pressure) ---------- */
+function enableShare(k){const c=document.getElementById(k);if(!c)return;
+  c.classList.add('ready');const b=c.querySelector('[data-share]');b.disabled=false;
+  if(S.shares[k]){c.classList.add('shared');b.textContent='Shared \u2713 \u2014 share again';}
+  maybeGlow(k);}
+function maybeGlow(k){
+  const course=k==='sh1'?'c1':'c2';const card=document.getElementById(k);
+  if(card&&S.courses[course]&&S.opened[course])card.classList.add('rainbow');}
+function shareCert(k,course){
+  const name=document.getElementById('meName').textContent;
+  const su='Milestone: my Coursera certificate \u2014 '+course;
+  const body='Hi,\n\nI\u2019ve just earned my certificate for \u201c'+course+'\u201d as part of the Expand Your Range programme at BetterUp \u2014 wanted to share the milestone with you.\n\nCertificate attached / linked.\n\n'+name;
+  window.open('https://mail.google.com/mail/?view=cm&fs=1'
+    +'&cc='+encodeURIComponent('bu.learning@betterup.co')
+    +'&su='+encodeURIComponent(su)
+    +'&body='+encodeURIComponent(body),'_blank');
+  S.shares[k]=1;const c=document.getElementById(k);c.classList.add('shared');
+  const b=c.querySelector('[data-share]');b.textContent='Shared \u2713 \u2014 share again';
+  ping(760);addXp(40);ev('cert-share',k,course);flush();save();
+}
+document.querySelectorAll('[data-share]').forEach(b=>b.addEventListener('click',()=>shareCert(b.dataset.share,b.dataset.cn.replace(/&amp;/g,'&'))));
+document.getElementById('c1open').addEventListener('click',()=>{S.opened.c1=1;maybeGlow('sh1');save();});
+document.getElementById('c2open').addEventListener('click',e=>{
+  if(e.currentTarget.classList.contains('off'))return;
+  S.opened.c2=1;maybeGlow('sh2');save();});
+
+/* ---------- field capture ---------- */
+document.querySelectorAll('[data-f]').forEach(t=>{
+  t.addEventListener('input',()=>{S.fields[t.dataset.f]=t.value;});
+  t.addEventListener('blur',()=>{save();ev('field',t.dataset.f);});
+});
+
+function doApply(silent){
+  /* Apply is optional AND always editable — learners can come back and add
+     or change their answers at any time; every save re-sends the latest text */
+  S.applied=true;
+  const p=document.getElementById('applyPanel');
+  if(p){const h=p.querySelector('h5');if(h)h.textContent='Apply — saved (you can edit and save again)';}
+  const g=document.getElementById('applyGo');if(g)g.textContent='Save again';
+  if(!silent){ping(700);
+    if(!S.applyXp){addXp(150);S.applyXp=1;}   /* XP once, saving still allowed forever */
+    ev('apply-saved','',JSON.stringify({a1:S.fields.a1||'',a2:S.fields.a2||'',a3:S.fields.a3||''}));flush();
+    toast('Plan saved',2);}
+  save();
+}
+function doReflect(silent){
+  /* Reflect stays editable too — people genuinely come back after trying things */
+  S.reflectOpen=true;
+  const p=document.getElementById('reflectPanel');
+  if(p){const h=p.querySelector('h5');if(h)h.textContent='Reflect — saved (you can edit and save again)';}
+  document.querySelectorAll('#reflectPanel [data-next="7"]').forEach(b=>b.textContent='Save again');
+  if(!silent){ping(640);
+    if(!S.reflectXp){addXp(150);S.reflectXp=1;}
+    ev('reflect-saved','',JSON.stringify({r1:S.fields.r1||'',r2:S.fields.r2||''}));flush();
+    toast('Reflection saved',2);}
+  save();
+}
+function doMail(silent){
+  S.mailed=true;
+  const b=document.getElementById('doneMail');
+  b.disabled=true;b.textContent='Enrolment requested ✓';
+  document.getElementById('mailOk').classList.add('show');
+  if(!silent){ping(720);addXp(100);ev('completion-mailed');flush();}
+  save();
+}
+document.getElementById('doneMail').addEventListener('click',()=>{
+  const name=document.getElementById('meName').textContent;
+  const body='Hi BU Learning,\n\nI\u2019ve completed The Loom (Program 3 \u2014 Augment and Automate Your Business). Here\u2019s what I built:\n\n'
+    +'Name: '+name+'\nTeam: \nDate: '
+    +new Date().toLocaleDateString('en-GB',{day:'numeric',month:'long',year:'numeric'})
+    +'\n\nWhat I automated / augmented:\n'+(S.fields.a2||'(describe here)')
+    +'\n\nHow someone else can run it:\n'+(S.fields.a3||'(describe here)')+'\n';
+  window.location.href='mailto:bu.learning@betterup.co'
+    +'?cc=deepika.kanojia@betterup.co'
+    +'&subject='+encodeURIComponent('The Loom completed — here\u2019s what I automated')
+    +'&body='+encodeURIComponent(body);
+  doMail();
+});
+document.getElementById('applyGo').addEventListener('click',()=>{doApply();advance(5);});
+/* Log my reflection — records answers (blank is fine) then advances */
+document.querySelectorAll('#reflectPanel [data-next="7"]').forEach(b=>b.addEventListener('click',()=>doReflect()));
+/* Skip is only allowed via an email to BU Learning saying you'll reflect later */
+const rs=document.getElementById('reflectSkip');
+if(rs)rs.addEventListener('click',()=>{
+  const name=document.getElementById('meName').textContent;
+  const body='Hi BU Learning,\n\nI\u2019ve reached the Tapestry stage of The Loom but I\u2019d like to complete my reflection later.\n\nName: '+name
+    +'\nDate: '+new Date().toLocaleDateString('en-GB',{day:'numeric',month:'long',year:'numeric'})
+    +'\n\nI\u2019ll come back and log my reflection once I\u2019ve had a proper go at applying it.\n';
+  window.location.href='mailto:bu.learning@betterup.co'
+    +'?subject='+encodeURIComponent('The Loom — I\u2019ll reflect later')
+    +'&body='+encodeURIComponent(body);
+  S.reflectDeferred=true;
+  const note=document.getElementById('reflectSkipNote');if(note)note.style.display='block';
+  ping(500);ev('reflect-deferred');flush();toast('Email drafted — reflect whenever you\u2019re ready',2);
+  save();
+  setTimeout(()=>advance(7),600); /* still unlocks what comes next */
+});
+
+document.getElementById('pCopy').addEventListener('click',async()=>{ping(500);
+  try{await navigator.clipboard.writeText(document.getElementById('pTxt').textContent);
+    toast('Copied — paste it in Claude',2);}catch(e){toast('Select and copy above');}});
+
+/* ---------- chart ---------- */
+function parse(t){const o={};let hit=0;
+  const rx={EF:/\bEF\s*[:=]\s*([1-5])/i,R:/\bR\s*[:=]\s*([1-5])/i,A:/\bA\s*[:=]\s*([1-5])/i,
+            N:/\bN\s*[:=]\s*([1-5])/i,G:/\bG\s*[:=]\s*([1-5])/i};
+  for(const k of ['EF','R','A','N','G']){const m=t.match(rx[k]);if(m){o[k]=+m[1];hit++;}}
+  return hit===5?o:null;}
+function drawChart(v){
+  const W=620,H=250,L=54,R=20,T=20,B=44,iw=W-L-R,ih=H-T-B;
+  const y=s=>T+ih-((s-1)/4)*ih,x=i=>L+(i/4)*iw;
+  let h=`<defs><filter id="lg"><feDropShadow dx="0" dy="0" stdDeviation="4.5" flood-color="#FF5FA8" flood-opacity=".8"/></filter></defs>`;
+  for(let s=1;s<=5;s++)h+=`<line x1="${L}" y1="${y(s)}" x2="${W-R}" y2="${y(s)}" stroke="rgba(201,168,255,.15)"/>
+    <text x="${L-11}" y="${y(s)+4}" text-anchor="end" font-family="Roboto Mono,monospace" font-size="9.5" fill="#A79BB8">${s}</text>`;
+  const pts=DIMS.map((d,i)=>[x(i),y(v[d[1]])]),lo=Math.min(...DIMS.map(d=>v[d[1]]));
+  h+=`<polyline points="${pts.map(p=>p.join(',')).join(' ')}" fill="none" stroke="#FF5FA8" stroke-width="2.6" stroke-linejoin="round" filter="url(#lg)"/>`;
+  pts.forEach((p,i)=>{const low=v[DIMS[i][1]]===lo;
+    if(low)h+=`<circle cx="${p[0]}" cy="${p[1]}" r="11" fill="#F5A8D8" opacity=".22"/>`;
+    h+=`<circle cx="${p[0]}" cy="${p[1]}" r="5.5" fill="${low?'#F5A8D8':'#FF5FA8'}"/>
+     <text x="${p[0]}" y="${H-24}" text-anchor="middle" font-family="Roboto Mono,monospace" font-size="8.5"
+       letter-spacing="1.2" fill="${low?'#F5A8D8':'#A79BB8'}">${DIMS[i][0].toUpperCase()}</text>
+     <text x="${p[0]}" y="${p[1]-14}" text-anchor="middle" font-family="Roboto Mono,monospace" font-size="11"
+       font-weight="700" fill="#F4F3E9">${v[DIMS[i][1]]}</text>`;});
+  h+=`<text x="${L-11}" y="${T-5}" text-anchor="end" font-family="Roboto Mono,monospace" font-size="7.5" letter-spacing="1.4" fill="#A79BB8">LEVEL</text>`;
+  document.getElementById('chart').innerHTML=h;
+  document.getElementById('edgeTxt').innerHTML=
+    `Your growth edge is <b>${DIMS.find(d=>v[d[1]]===lo)[0]}</b>, lowest at ${lo}. `+
+    `Levels: 1–2 pre-pilot · 3 pilot · 4 builder · 5 multiplier. You'll run this again at the end to see the shift.`;
+  document.getElementById('chartWrap').classList.add('show');
+}
+document.getElementById('scoreGo').addEventListener('click',()=>{
+  const raw=document.getElementById('scoreIn').value,v=parse(raw),e=document.getElementById('scoreErr');
+  if(!v){e.style.display='block';ping(200);ev('range-parse-fail');return;}
+  e.style.display='none';S.range=Object.assign({},v,{raw:raw.trim(),Total:v.R+v.A+v.N+v.G+v.EF});drawChart(v);addXp(100);
+  document.getElementById('scoreGo').textContent='Re-plot';
+  ev('range-saved','',JSON.stringify(v));toast('Terrain mapped',2);save();
+  setTimeout(()=>document.getElementById('chartWrap').scrollIntoView({behavior:'smooth',block:'center'}),160);
+});
+
+/* ---------- peers ---------- */
+const SLACK='';   // paste the #ai-upskilling link here once the channel exists
+function peers(){ping(460);ev('peers-click');
+  if(SLACK){window.open(SLACK,'_blank');}else{toast('Slack channel coming soon');}}
+/* ---------- leaderboard ---------- */
+async function fetchLeaderboard(){
+  if(!API)return null;
+  try{
+    const res=await fetch(API+'?action=leaderboard&game='+encodeURIComponent(GAME),{method:'GET'});
+    if(!res.ok)return null;
+    const data=await res.json();
+    return Array.isArray(data)?data:null;
+  }catch(e){return null;}
+}
+async function renderLeaderboard(){
+  const list=document.getElementById('lbList');list.innerHTML='';
+  let rows=await fetchLeaderboard();
+  if(!rows||!rows.length){
+    rows=[{name:'RIYA K.',xp:640},{name:'DEV P.',xp:520},{name:'MARIA S.',xp:410},{name:'TOM H.',xp:300}];
+    rows.push({name:USER.name,xp:S.xp});
+  }
+  rows=rows.slice().sort((a,b)=>b.xp-a.xp).slice(0,10);
+  rows.forEach((r,i)=>{
+    const d=document.createElement('div');
+    d.className='lbrow'+(r.name===USER.name?' me':'');
+    d.innerHTML='<span class="rank">'+String(i+1).padStart(2,'0')+'</span>'
+      +'<span class="nm">'+String(r.name||'').replace(/[<>&]/g,'')+'</span>'
+      +'<span class="pts">'+r.xp+' XP</span>';
+    list.appendChild(d);
+  });
+}
+document.querySelectorAll('.lbBtn').forEach(b=>b.addEventListener('click',()=>{
+  renderLeaderboard();document.getElementById('lbDrawer').classList.add('open');ev('leaderboard-open');}));
+document.getElementById('lbClose').addEventListener('click',()=>
+  document.getElementById('lbDrawer').classList.remove('open'));
+
+/* ---------- AI coach (copy-and-open — no API key, no cost, same pattern as the RANGE evaluator) ---------- */
+document.querySelectorAll('.coachBtn').forEach(b=>b.addEventListener('click',()=>{
+  document.getElementById('coachDrawer').classList.add('open');ev('coach-open');}));
+document.getElementById('coachClose').addEventListener('click',()=>
+  document.getElementById('coachDrawer').classList.remove('open'));
+document.getElementById('coachCopy').addEventListener('click',async()=>{
+  const q=document.getElementById('coachQ').value.trim();
+  if(!q){toast('Write your question first');return;}
+  const prompt='I\'m working through BetterUp\'s The Loom (Augment and Automate Your Business) program and got stuck on this:\n\n'+q
+    +'\n\nCan you help me understand it and suggest what to try next?';
+  try{await navigator.clipboard.writeText(prompt);toast('Copied — paste it in Claude',2);}
+  catch(e){toast('Select and copy manually');}
+  ev('coach-question','',q.slice(0,80));
+});
+
+document.getElementById('peersBtn').addEventListener('click',peers);
+document.getElementById('slackLink').addEventListener('click',e=>{e.preventDefault();peers();});
+
+/* ---------- restore ---------- */
+(function restore(){
+  load();setXp();
+  const done=Object.keys(S.cleared).map(Number).filter(n=>n<=5).sort();
+  const saved={...S.cleared};S.cleared={};
+  done.forEach(id=>advance(id,true));
+  if(saved[6])S.cleared[6]=1;
+  Object.keys(S.courses).forEach(k=>markCourse(k,true));
+  if(S.range)drawChart(S.range);
+  Object.entries(S.fields).forEach(([k,val])=>{
+    const t=document.querySelector(`[data-f="${k}"]`);if(t)t.value=val;});
+  if(S.applied)doApply(true);
+  if(S.reflectOpen)doReflect(true);
+  if(S.mailed)doMail(true);
+  /* open the first unfinished stage */
+  const next=Math.min(done.length+1,6);
+  document.querySelectorAll('.stage').forEach(s=>s.classList.remove('open'));
+  const el=document.getElementById('s'+next);if(el&&!el.classList.contains('locked'))el.classList.add('open');
+  refresh();
+  ev('session-start','',done.length?'resumed at '+next:'first visit');
+  if(done.length)toast('Welcome back — checkpoint '+Math.min(done.length,5),2);
+})();
+</script>
+</body>
+</html>
