@@ -318,19 +318,6 @@ label.q i{font-style:normal;color:var(--pink);font-family:var(--mono);font-size:
 .edge{margin-top:12px;font-size:13.5px;color:var(--dim);line-height:1.5}
 .edge b{color:var(--gold)}
 
-.course.share{border-style:dashed;opacity:.55;position:relative}
-.course.share.ready{opacity:1;border-style:solid;border-color:var(--gold,#C8A24B)}
-.course.share.shared em{color:var(--mint,#3FBF9F)}
-.course.share.rainbow{border-color:transparent;background:rgba(20,16,30,.72)}
-.course.share.rainbow::before{content:'';position:absolute;inset:-2px;border-radius:13px;z-index:-2;
-  background:linear-gradient(120deg,#FF5FA8,#F5A8D8,#FFC2E2,#5C4FE5,#C9A8FF,#FF5FA8);
-  background-size:200% 200%;filter:blur(11px);opacity:.9;animation:rainbowGlow 3.2s ease-in-out infinite}
-.course.share.rainbow::after{content:'';position:absolute;inset:0;border-radius:12px;z-index:-1;
-  padding:1.5px;background:linear-gradient(120deg,#FF5FA8,#F5A8D8,#FFC2E2,#5C4FE5,#C9A8FF,#FF5FA8);
-  background-size:200% 200%;-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);
-  -webkit-mask-composite:xor;mask-composite:exclude;animation:rainbowGlow 3.2s ease-in-out infinite}
-@keyframes rainbowGlow{0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%}}
-@media (prefers-reduced-motion:reduce){.course.share.rainbow::before,.course.share.rainbow::after{animation:none}}
 .course{display:flex;align-items:center;gap:13px;border:1px solid var(--line);border-radius:12px;
   padding:13px 15px;margin-bottom:10px;background:rgba(123,79,166,.035)}
 .course .dot{width:9px;height:9px;flex:0 0 9px;border-radius:50%;background:#4A4056}
@@ -399,7 +386,7 @@ label.q i{font-style:normal;color:var(--pink);font-family:var(--mono);font-size:
 <header class="hud">
   <div class="brand"><b>BU Learning</b><i>The Loom</i></div>
   <div class="stat"><u>Threads</u><b id="hXp" class="p">0 XP</b></div>
-  <div class="stat"><u>Checkpoint</u><b id="hStep">0/5</b></div>
+  <div class="stat"><u>Checkpoint</u><b id="hStep">0/4</b></div>
   <div class="bar"><i id="hBar"></i></div>
   <button class="lbBtn" id="lbBtn">🏆 Leaderboard</button>
   <button class="coachBtn" id="coachBtn">🤖 AI Coach</button>
@@ -411,7 +398,7 @@ label.q i{font-style:normal;color:var(--pink);font-family:var(--mono);font-size:
 
 <main class="wrap">
   <h1>Weave your <em>RANGE</em>.</h1>
-  <p class="sub">Map a real process, find where AI belongs in it, and build a repeatable Claude Project or workflow that someone else can run without you. Five checkpoints from the first pattern to a finished tapestry.</p>
+  <p class="sub">Map a real process, find where AI belongs in it, and build a repeatable Claude Project or workflow that someone else can run without you. Four checkpoints from the first pattern to a finished tapestry.</p>
 
   <div class="map" id="mapBox">
     <span class="prog" id="mapProg"></span>
@@ -472,51 +459,21 @@ label.q i{font-style:normal;color:var(--pink);font-family:var(--mono);font-size:
 
   <section class="stage locked" id="s3">
     <div class="sh"><div class="node">03</div>
-      <div><h3>Two weaves</h3><p>Critical — clear both before the warp opens</p></div>
-      <span class="tag">8 hrs</span></div>
+      <div><h3>The warp</h3><p>Core — map your process before you automate it</p></div>
+      <span class="tag">4 hrs</span></div>
     <div class="body">
-      <div class="course ready" id="c1"><span class="dot"></span>
-        <div class="meta"><em>Weave 01 · Spot &amp; sustain</em>
-          <b>Applying GenAI Tools for Process Automation</b>
-          <span>SkillUp · 6 hrs · 4.7 — identify high-impact automation opportunities, design multi-step workflows, chain prompting, error handling, monitoring and fallback plans, combine multiple AI services end to end, measure automation performance</span></div>
-        <div class="acts"><a class="btn crs" id="c1open" data-ev="open-c1" target="_blank" rel="noopener" href="https://www.coursera.org/learn/applying-genai-tools-for-process-automation">Open</a>
-          <button class="btn ghost" data-course="c1">Cleared</button></div></div>
-      <div class="course share" id="sh1"><span class="dot"></span>
-        <div class="meta"><em>Optional · Share your milestone</em>
-          <b>Earned your Weave 01 certificate?</b>
-          <span>Share it with your manager, L&amp;D or your team — it's a milestone worth showing. Entirely optional, never required.</span></div>
-        <div class="acts"><button class="btn ghost" data-share="sh1" data-cn="Applying GenAI Tools for Process Automation" disabled>Share via Gmail</button></div></div>
-      <div class="course" id="c2"><span class="dot"></span>
-        <div class="meta"><em>Weave 02 · Build the loom</em>
-          <b>AI Automation with Claude</b>
-          <span id="c2s">AWIT + Anthropic · 2 hrs · 4.8 — opens once the first weave is cleared</span></div>
-        <div class="acts"><a class="btn crs off" id="c2open" data-ev="open-c2">Open</a>
-          <button class="btn ghost" data-course="c2" disabled>Locked</button></div></div>
-      <div class="course share" id="sh2"><span class="dot"></span>
-        <div class="meta"><em>Optional · Share your milestone</em>
-          <b>Earned your Weave 02 certificate?</b>
-          <span>Share it with your manager, L&amp;D or your team — it's a milestone worth showing. Entirely optional, never required.</span></div>
-        <div class="acts"><button class="btn ghost" data-share="sh2" data-cn="AI Automation with Claude" disabled>Share via Gmail</button></div></div>
-      <div class="acts hide" id="n3"><button class="btn" data-next="3">Both cleared — continue</button></div>
+      <div class="course ready" id="c4"><span class="dot"></span>
+        <div class="meta"><em>The warp · Map before you automate</em>
+          <b>Augment and Automate Your BetterUp Processes</b>
+          <span>Coursera · 4 hrs · 4.7 — apply automation and AI augmentation directly to BetterUp's own processes</span></div>
+        <div class="acts"><a class="btn crs" id="c4open" data-ev="open-c4" target="_blank" rel="noopener" href="https://www.coursera.org/learn/betterup-process-automation">Open</a>
+          <button class="btn ghost" data-course="c4">Cleared</button></div></div>
+      <div class="acts hide" id="n3"><button class="btn" data-next="3">Continue</button></div>
     </div>
   </section>
 
   <section class="stage locked" id="s4">
     <div class="sh"><div class="node">04</div>
-      <div><h3>The warp</h3><p>Core — map before you automate</p></div>
-      <span class="tag">4 hrs</span></div>
-    <div class="body">
-      <div class="course ready" id="c3"><span class="dot"></span>
-        <div class="meta"><em>The warp · Map before you automate</em><b>Business Process Modeling with AI</b>
-          <span>Starweaver · 4 hrs · 4.7 — the BPM lifecycle and how AI enhances each phase, AI tools for flowcharting and workflow automation, apply Lean, Six Sigma and TQM with AI, analyze, redesign and automate processes</span></div>
-        <div class="acts"><a class="btn crs" id="c3open" data-ev="open-c3" target="_blank" rel="noopener" href="https://www.coursera.org/learn/business-process-modeling-with-ai">Open</a>
-          <button class="btn ghost" data-course="c3">Cleared</button></div></div>
-      <div class="acts hide" id="n4"><button class="btn" data-next="4">Continue to solo weave</button></div>
-    </div>
-  </section>
-
-  <section class="stage locked" id="s5">
-    <div class="sh"><div class="node">05</div>
       <div><h3>Solo weave</h3><p>Apply it to a real process</p></div>
       <span class="tag">Mission</span></div>
     <div class="body">
@@ -534,7 +491,7 @@ label.q i{font-style:normal;color:var(--pink);font-family:var(--mono);font-size:
     </div>
   </section>
 
-  <section class="stage locked" id="s6">
+  <section class="stage locked" id="s5">
     <div class="sh"><div class="node">★</div>
       <div><h3>Tapestry</h3><p>Pattern complete</p></div><span class="tag">Complete</span></div>
     <div class="body">
@@ -542,11 +499,11 @@ label.q i{font-style:normal;color:var(--pink);font-family:var(--mono);font-size:
         <p>You didn't just finish the courses — you put it to work. Log what you built so other people can see what's possible.</p>
         <button class="btn gold" data-ev="log-build">Log your build in #ai-builds</button></div>
       <div style="height:14px"></div>
-      <div class="acts" style="margin-top:14px"><button class="btn" data-next="6">Continue to reflection</button></div>
+      <div class="acts" style="margin-top:14px"><button class="btn" data-next="5">Continue to reflection</button></div>
     </div>
   </section>
 
-  <section class="stage locked" id="s7">
+  <section class="stage locked" id="s6">
     <div class="sh"><div class="node">✎</div>
       <div><h3>Reflect</h3><p>How did it go once you tried it for real?</p></div>
       <span class="tag">Optional</span></div>
@@ -559,7 +516,7 @@ label.q i{font-style:normal;color:var(--pink);font-family:var(--mono);font-size:
         <label class="q"><i>02</i>What worked, where did you get stuck, and what would you try next?</label>
         <textarea rows="2" data-f="r2" placeholder="Type your answer here..."></textarea>
         <div class="acts">
-          <button class="btn gold" data-next="7">Log my reflection</button>
+          <button class="btn gold" data-next="6">Log my reflection</button>
           <button class="btn ghost" id="reflectSkip">Skip for now — I'll reflect later</button>
         </div>
         <p class="edge" id="reflectSkipNote" style="display:none;margin-top:8px">
@@ -568,7 +525,7 @@ label.q i{font-style:normal;color:var(--pink);font-family:var(--mono);font-size:
     </div>
   </section>
 
-  <section class="stage locked" id="s8">
+  <section class="stage locked" id="s7">
     <div class="sh"><div class="node">✉</div>
       <div><h3>Share your system</h3><p>One click — tell BU Learning what you automated, so it's logged and others can find it</p></div>
       <span class="tag">30 sec</span></div>
@@ -650,7 +607,7 @@ function ping(){}
 
 /* ---------- state + persistence ---------- */
 const KEY='aab:'+USER.email;
-const S={xp:0,cleared:{},courses:{},range:null,fields:{},applied:false,reflectOpen:false,mailed:false,shares:{},opened:{}};
+const S={xp:0,cleared:{},courses:{},range:null,fields:{},applied:false,reflectOpen:false,mailed:false};
 function save(){
   try{localStorage.setItem(KEY,JSON.stringify(S));}catch(e){}
   if(API)post('save',{state:S});
@@ -692,7 +649,7 @@ document.addEventListener('click',e=>{
 },true);
 
 /* ---------- ui ---------- */
-const XP={1:100,2:150,3:400,4:200,5:350,6:200,7:150,8:100};
+const XP={1:100,2:150,3:600,4:350,5:200,6:150};
 const DIMS=[['Reach','R'],['Autonomy','A'],['Navigation','N'],['Generalization','G'],['Execution','EF']];
 const PTS=[[92,268],[268,214],[430,178],[598,132],[730,96],[832,52]];
 const SEG=[
@@ -712,14 +669,13 @@ function setXp(){document.getElementById('hXp').textContent=S.xp+' XP';}
 function addXp(n){S.xp+=n;setXp();toast('+'+n+' XP');save();}
 
 /* Checkpoint centers as % of the background image — measured directly against loom-map-bg.png */
-/* Six milestones, one per clickable stage (s1..s6). Positions are % of the plate. */
+/* Five milestones, one per clickable stage (s1..s5). Positions are % of the plate. */
 const MAPPTS=[
  {id:1, label:'SPOOL',    fx:9,  fy:80, icon:'home',    hue:'#FF2E9A', desc:'The pattern — see where automation belongs.'},
  {id:2, label:'02',       fx:26, fy:70, icon:'compass', hue:'#B14DFF', desc:'Thread your bearings — run the RANGE evaluator.'},
- {id:3, label:'03',       fx:44, fy:62, icon:'chest',   hue:'#FF3DA6', desc:'Two weaves — clear both critical courses.'},
- {id:4, label:'04',       fx:62, fy:52, icon:'ship',    hue:'#D08BFF', desc:'The warp — map before you automate.'},
- {id:5, label:'05',       fx:79, fy:43, icon:'gem',     hue:'#7C5CFF', desc:'Solo weave — apply it to a real process.'},
- {id:6, label:'TAPESTRY', fx:89, fy:22, icon:'flag',    hue:'#FF1F8F', desc:'Weave it all together to create impact.'}
+ {id:3, label:'03',       fx:53, fy:57, icon:'ship',    hue:'#FF3DA6', desc:'The warp — map your process before you automate it.'},
+ {id:4, label:'04',       fx:79, fy:43, icon:'gem',     hue:'#7C5CFF', desc:'Solo weave — apply it to a real process.'},
+ {id:5, label:'TAPESTRY', fx:89, fy:22, icon:'flag',    hue:'#FF1F8F', desc:'Weave it all together to create impact.'}
 ];
 MAPPTS.forEach(m=>{m.x=m.fx*10; m.y=m.fy*5.55;});
 
@@ -840,9 +796,9 @@ function drawMap(){
   });
 }
 function refresh(){const n=Object.keys(S.cleared).length;
-  document.getElementById('hStep').textContent=Math.min(n,5)+'/5';
-  document.getElementById('hBar').style.width=(n/6*100)+'%';drawMap();
-  const label=n===0?'Start at the Spool':n>=6?'Tapestry':String(n).padStart(2,'0')+' → '+String(n+1).padStart(2,'0');
+  document.getElementById('hStep').textContent=Math.min(n,4)+'/4';
+  document.getElementById('hBar').style.width=(n/5*100)+'%';drawMap();
+  const label=n===0?'Start at the Spool':n>=5?'Tapestry':String(n).padStart(2,'0')+' → '+String(n+1).padStart(2,'0');
   const prog=document.getElementById('mapProg');if(prog)prog.textContent=label;
   const vprog=document.getElementById('viewerProg');if(vprog)vprog.textContent=label;
 }
@@ -872,16 +828,16 @@ function advance(id,silent){
   el.classList.remove('on');el.classList.add('done');if(!silent)el.classList.remove('open');
   const nx=document.getElementById('s'+(id+1));
   if(nx){nx.classList.remove('locked');nx.classList.add('on');} /* unlocked, not auto-opened — reach it via the route */
-  if(id===6&&!silent&&!already)toast('Tapestry complete',1); /* Tapestry is now its own step */
+  if(id===5&&!silent&&!already)toast('Tapestry complete',1); /* Tapestry is now its own step */
   refresh();save();
-  if(!silent&&!already)burstAt(Math.min(id-1,5));
+  if(!silent&&!already)burstAt(Math.min(id-1,4));
   if(!silent){
     if(nx)setTimeout(()=>openOnly('s'+(id+1)),240); /* every step flows straight into the next */
-    if(!already&&id<6)toast('Next checkpoint unlocked',2);}
+    if(!already&&id<5)toast('Next checkpoint unlocked',2);}
 }
 document.querySelectorAll('[data-next]').forEach(b=>b.addEventListener('click',()=>{
   advance(+b.dataset.next);}));
-const STAGE_LABEL={s1:'SPOOL',s2:'02',s3:'03',s4:'04',s5:'05',s6:'TAPESTRY',s7:'REFLECT',s8:'SHARE'};
+const STAGE_LABEL={s1:'SPOOL',s2:'02',s3:'03',s4:'04',s5:'TAPESTRY',s6:'REFLECT',s7:'SHARE'};
 function openOnly(id){
   document.querySelectorAll('.stage.open').forEach(s=>{if(s.id!==id)s.classList.remove('open');});
   document.querySelectorAll('.stage.current').forEach(s=>{if(s.id!==id)s.classList.remove('current');});
@@ -898,51 +854,15 @@ document.querySelectorAll('.sh').forEach(h=>h.addEventListener('click',()=>{
   if(s.classList.contains('open'))s.classList.remove('open');else openOnly(s.id);}));
 
 function markCourse(k,silent){
-  const row=document.getElementById(k),b=row.querySelector('[data-course]');
+  const row=document.getElementById(k);if(!row)return; /* guards against stale saved state naming a course card that no longer exists */
+  const b=row.querySelector('[data-course]');
   S.courses[k]=1;row.classList.remove('ready');row.classList.add('done');
   b.textContent='Done';b.disabled=true;
   if(!silent){ping(720);addXp(120);ev('course-done',k);}
-  if(k==='c1')enableShare('sh1');
-  if(k==='c2')enableShare('sh2');
-  if(k==='c1'){const r=document.getElementById('c2');r.classList.add('ready');
-    r.querySelectorAll('button').forEach(x=>x.disabled=false);
-    const a=document.getElementById('c2open');
-    a.classList.remove('off');a.target='_blank';a.rel='noopener';
-    a.href='https://www.coursera.org/learn/ai-for-everyone-ai-automation-with-claude';
-    r.querySelector('[data-course]').textContent='Cleared';
-    document.getElementById('c2s').textContent='AWIT + Anthropic · 2 hrs · 4.8 — Claude Projects for repeatable tasks, automate deliverables across any input, upload sources of truth for RAG, extend to multimodal';
-    if(!silent)toast('Second weave open',2);}
-  if(S.courses.c1&&S.courses.c2)document.getElementById('n3').classList.remove('hide');
-  if(k==='c3')document.getElementById('n4').classList.remove('hide');
+  if(k==='c4')document.getElementById('n3').classList.remove('hide');
   save();
 }
 document.querySelectorAll('[data-course]').forEach(b=>b.addEventListener('click',()=>markCourse(b.dataset.course)));
-
-/* ---------- certificate sharing (optional, pride not pressure) ---------- */
-function enableShare(k){const c=document.getElementById(k);if(!c)return;
-  c.classList.add('ready');const b=c.querySelector('[data-share]');b.disabled=false;
-  if(S.shares[k]){c.classList.add('shared');b.textContent='Shared \u2713 \u2014 share again';}
-  maybeGlow(k);}
-function maybeGlow(k){
-  const course=k==='sh1'?'c1':'c2';const card=document.getElementById(k);
-  if(card&&S.courses[course]&&S.opened[course])card.classList.add('rainbow');}
-function shareCert(k,course){
-  const name=document.getElementById('meName').textContent;
-  const su='Milestone: my Coursera certificate \u2014 '+course;
-  const body='Hi,\n\nI\u2019ve just earned my certificate for \u201c'+course+'\u201d as part of the Expand Your Range programme at BetterUp \u2014 wanted to share the milestone with you.\n\nCertificate attached / linked.\n\n'+name;
-  window.open('https://mail.google.com/mail/?view=cm&fs=1'
-    +'&cc='+encodeURIComponent('bu.learning@betterup.co')
-    +'&su='+encodeURIComponent(su)
-    +'&body='+encodeURIComponent(body),'_blank');
-  S.shares[k]=1;const c=document.getElementById(k);c.classList.add('shared');
-  const b=c.querySelector('[data-share]');b.textContent='Shared \u2713 \u2014 share again';
-  ping(760);addXp(40);ev('cert-share',k,course);flush();save();
-}
-document.querySelectorAll('[data-share]').forEach(b=>b.addEventListener('click',()=>shareCert(b.dataset.share,b.dataset.cn.replace(/&amp;/g,'&'))));
-document.getElementById('c1open').addEventListener('click',()=>{S.opened.c1=1;maybeGlow('sh1');save();});
-document.getElementById('c2open').addEventListener('click',e=>{
-  if(e.currentTarget.classList.contains('off'))return;
-  S.opened.c2=1;maybeGlow('sh2');save();});
 
 /* ---------- field capture ---------- */
 document.querySelectorAll('[data-f]').forEach(t=>{
@@ -968,7 +888,7 @@ function doReflect(silent){
   S.reflectOpen=true;
   const p=document.getElementById('reflectPanel');
   if(p){const h=p.querySelector('h5');if(h)h.textContent='Reflect — saved (you can edit and save again)';}
-  document.querySelectorAll('#reflectPanel [data-next="7"]').forEach(b=>b.textContent='Save again');
+  document.querySelectorAll('#reflectPanel [data-next="6"]').forEach(b=>b.textContent='Save again');
   if(!silent){ping(640);
     if(!S.reflectXp){addXp(150);S.reflectXp=1;}
     ev('reflect-saved','',JSON.stringify({r1:S.fields.r1||'',r2:S.fields.r2||''}));flush();
@@ -996,9 +916,9 @@ document.getElementById('doneMail').addEventListener('click',()=>{
     +'&body='+encodeURIComponent(body);
   doMail();
 });
-document.getElementById('applyGo').addEventListener('click',()=>{doApply();advance(5);});
+document.getElementById('applyGo').addEventListener('click',()=>{doApply();advance(4);});
 /* Log my reflection — records answers (blank is fine) then advances */
-document.querySelectorAll('#reflectPanel [data-next="7"]').forEach(b=>b.addEventListener('click',()=>doReflect()));
+document.querySelectorAll('#reflectPanel [data-next="6"]').forEach(b=>b.addEventListener('click',()=>doReflect()));
 /* Skip is only allowed via an email to BU Learning saying you'll reflect later */
 const rs=document.getElementById('reflectSkip');
 if(rs)rs.addEventListener('click',()=>{
@@ -1013,7 +933,7 @@ if(rs)rs.addEventListener('click',()=>{
   const note=document.getElementById('reflectSkipNote');if(note)note.style.display='block';
   ping(500);ev('reflect-deferred');flush();toast('Email drafted — reflect whenever you\u2019re ready',2);
   save();
-  setTimeout(()=>advance(7),600); /* still unlocks what comes next */
+  setTimeout(()=>advance(6),600); /* still unlocks what comes next */
 });
 
 document.getElementById('pCopy').addEventListener('click',async()=>{ping(500);
@@ -1114,10 +1034,10 @@ document.getElementById('slackLink').addEventListener('click',e=>{e.preventDefau
 /* ---------- restore ---------- */
 (function restore(){
   load();setXp();
-  const done=Object.keys(S.cleared).map(Number).filter(n=>n<=5).sort();
+  const done=Object.keys(S.cleared).map(Number).filter(n=>n<=4).sort();
   const saved={...S.cleared};S.cleared={};
   done.forEach(id=>advance(id,true));
-  if(saved[6])S.cleared[6]=1;
+  if(saved[5])S.cleared[5]=1;
   Object.keys(S.courses).forEach(k=>markCourse(k,true));
   if(S.range)drawChart(S.range);
   Object.entries(S.fields).forEach(([k,val])=>{
@@ -1126,12 +1046,12 @@ document.getElementById('slackLink').addEventListener('click',e=>{e.preventDefau
   if(S.reflectOpen)doReflect(true);
   if(S.mailed)doMail(true);
   /* open the first unfinished stage */
-  const next=Math.min(done.length+1,6);
+  const next=Math.min(done.length+1,5);
   document.querySelectorAll('.stage').forEach(s=>s.classList.remove('open'));
   const el=document.getElementById('s'+next);if(el&&!el.classList.contains('locked'))el.classList.add('open');
   refresh();
   ev('session-start','',done.length?'resumed at '+next:'first visit');
-  if(done.length)toast('Welcome back — checkpoint '+Math.min(done.length,5),2);
+  if(done.length)toast('Welcome back — checkpoint '+Math.min(done.length,4),2);
 })();
 </script>
 </body>
