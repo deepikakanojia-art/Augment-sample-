@@ -602,7 +602,7 @@ function whoAmI(){
   return who;
 }
 const ME=whoAmI();
-const USER={name:ME.name,email:ME.email};
+const USER={name:ME.name,email:String(ME.email||'').toLowerCase()}; /* normalized once here so KEY, isMe and backend rows all agree on casing — same identity rule as the sister sites */
 
 /* ---------- snow ---------- */
 (function(){let h='';for(let i=0;i<34;i++){
@@ -632,17 +632,27 @@ function ping(){}
 /* ---------- state + persistence ---------- */
 const KEY='aab:'+USER.email;
 const S={xp:0,cleared:{},courses:{},range:null,fields:{},applied:false,reflectOpen:false,mailed:false,quiz:{}};
+let saveChain=Promise.resolve(); /* serializes save() POSTs so a slow earlier request can't land after a faster later one and overwrite newer progress */
+let RESTORING=false; /* true only while restore() replays already-persisted state to rebuild the UI on load */
 function save(){
+  if(RESTORING)return; /* the replay reproduces state that's already in localStorage — writing partial mid-replay snapshots back would (a) fire the cross-tab 'storage' listener in every other open tab and ping-pong location.reload() between tabs forever, and (b) queue a burst of redundant POSTs of unchanged state */
   try{localStorage.setItem(KEY,JSON.stringify(S));}catch(e){}
-  if(API)post('save',{state:S});
+  if(!API)return;
+  const snapshot=JSON.stringify(S); /* freeze this call's state now, so it's sent as-is even if S changes before its turn in the queue */
+  saveChain=saveChain.then(()=>post('save',{state:JSON.parse(snapshot)}));
 }
 function load(){
-  try{const r=localStorage.getItem(KEY);if(r)Object.assign(S,JSON.parse(r));}catch(e){}
+  try{let r=localStorage.getItem(KEY);
+    if(!r&&ME.email&&ME.email!==USER.email)r=localStorage.getItem('aab:'+ME.email); /* migrate progress saved under the pre-normalization mixed-case key so it isn't orphaned */
+    if(r)Object.assign(S,JSON.parse(r));}catch(e){}
 }
+window.addEventListener('storage',e=>{
+  if(e.key===KEY&&e.newValue)location.reload(); /* another tab just saved progress under this profile — reload rather than let this tab's stale in-memory state clobber it on its next save */
+});
 
 /* ---------- analytics ---------- */
 const SESSION=Math.random().toString(36).slice(2,10);
-const T0=Date.now();let visible=0,lastTick=Date.now(),queue=[];
+let visible=0,lastTick=Date.now(),queue=[]; /* removed unused T0 — nothing ever read it */
 function ev(type,target,extra){
   queue.push({email:USER.email,name:USER.name,session:SESSION,ts:new Date().toISOString(),
     type:type,target:target||'',step:Object.keys(S.cleared).length,
@@ -657,16 +667,18 @@ function flush(){
 }
 function post(action,payload){
   try{
-    fetch(API,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},
-      body:JSON.stringify(Object.assign({action:action,game:GAME,email:USER.email,name:USER.name,session:SESSION},payload))});
-  }catch(e){}
+    return fetch(API,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},keepalive:true,
+      body:JSON.stringify(Object.assign({action:action,game:GAME,email:USER.email,name:USER.name,session:SESSION},payload))}).catch(()=>{});
+    /* keepalive lets this request survive a beforeunload/tab-close instead of being aborted mid-flight;
+       the .catch keeps a network failure from becoming an unhandled promise rejection */
+  }catch(e){return Promise.resolve();}
 }
 setInterval(()=>{const n=Date.now();
   if(document.visibilityState==='visible')visible+=n-lastTick;lastTick=n;},1000);
 setInterval(flush,20000);
 document.addEventListener('visibilitychange',()=>{
   ev(document.visibilityState==='visible'?'focus':'blur');if(document.visibilityState!=='visible')flush();});
-window.addEventListener('beforeunload',()=>{ev('session-end','',Math.round(visible/1000));flush();});
+window.addEventListener('beforeunload',()=>{ev('session-end','',Math.round(visible/1000));save();flush();}); /* save() flushes S.fields (kept current on every keystroke) to localStorage synchronously, so a focused textarea's text isn't lost on refresh/close before its blur ever fires */
 document.addEventListener('click',e=>{
   const b=e.target.closest('button,a');if(!b)return;
   ev('click',b.dataset.ev||b.dataset.next||b.dataset.course||b.id||b.textContent.trim().slice(0,32));
@@ -851,12 +863,12 @@ function advance(id,silent){
   const el=document.getElementById('s'+id);
   el.classList.remove('on');el.classList.add('done');if(!silent)el.classList.remove('open');
   const nx=document.getElementById('s'+(id+1));
-  if(nx){nx.classList.remove('locked');nx.classList.add('on');} /* unlocked, not auto-opened — reach it via the route */
+  if(nx&&!already){nx.classList.remove('locked');nx.classList.add('on');} /* unlocked, not auto-opened — reach it via the route. Guarded by !already so re-clicking an already-cleared stage's continue button can't re-tag a stage the learner has since passed as "on" and pull them backward */
   if(id===5&&!silent&&!already)toast('Tapestry complete',1); /* Tapestry is now its own step */
   refresh();save();
   if(!silent&&!already)burstAt(Math.min(id-1,4));
   if(!silent){
-    if(nx)setTimeout(()=>openOnly('s'+(id+1)),240); /* every step flows straight into the next */
+    if(nx&&!already)setTimeout(()=>openOnly('s'+(id+1)),240); /* every step flows straight into the next, but only the first time through */
     if(!already&&id<5)toast('Next checkpoint unlocked',2);}
 }
 document.querySelectorAll('[data-next]').forEach(b=>b.addEventListener('click',()=>{
@@ -951,7 +963,7 @@ function doReflect(silent){
 function doMail(silent){
   S.mailed=true;
   const b=document.getElementById('doneMail');
-  b.disabled=true;b.textContent='Enrolment requested ✓';
+  b.disabled=true;b.textContent='Shared ✓'; /* was leftover "Enrolment requested" copy from another template — this flow shares a build, it doesn't enrol */
   document.getElementById('mailOk').classList.add('show');
   if(!silent){ping(720);addXp(100);ev('completion-mailed');flush();}
   save();
@@ -968,6 +980,15 @@ document.getElementById('doneMail').addEventListener('click',()=>{
     +'&subject='+encodeURIComponent('The Loom completed — here\u2019s what I automated')
     +'&body='+encodeURIComponent(body);
   doMail();
+});
+/* "Log your build in #ai-builds" (s5) was wired to nothing but the passive analytics
+   click logger — clicking it did nothing a learner could see. One-time XP guarded by
+   S.buildLogged so repeat clicks still toast but can't be farmed (same pattern as the
+   sister sites' log-build handler). */
+document.querySelector('[data-ev="log-build"]').addEventListener('click',()=>{
+  ping(700);
+  if(!S.buildLogged){S.buildLogged=true;addXp(30);save();}
+  toast('Logged — nice work',1);
 });
 document.getElementById('applyGo').addEventListener('click',()=>{doApply();advance(4);});
 /* Log my reflection — records answers (blank is fine) then advances */
@@ -1024,7 +1045,8 @@ function drawChart(v){
 document.getElementById('scoreGo').addEventListener('click',()=>{
   const raw=document.getElementById('scoreIn').value,v=parse(raw),e=document.getElementById('scoreErr');
   if(!v){e.style.display='block';ping(200);ev('range-parse-fail');return;}
-  e.style.display='none';S.range=Object.assign({},v,{raw:raw.trim(),Total:v.R+v.A+v.N+v.G+v.EF});drawChart(v);addXp(100);
+  e.style.display='none';S.range=Object.assign({},v,{raw:raw.trim(),Total:v.R+v.A+v.N+v.G+v.EF});drawChart(v);
+  if(!S.rangeXp){addXp(100);S.rangeXp=1;} /* XP once — re-plotting to update the chart shouldn't re-earn it */
   document.getElementById('scoreGo').textContent='Re-plot';
   ev('range-saved','',JSON.stringify(v));toast('Terrain mapped',2);save();
   setTimeout(()=>document.getElementById('chartWrap').scrollIntoView({behavior:'smooth',block:'center'}),160);
@@ -1044,22 +1066,43 @@ async function fetchLeaderboard(){
     return Array.isArray(data)?data:null;
   }catch(e){return null;}
 }
+function isMe(r){return r.email?String(r.email).toLowerCase()===USER.email:r.name===USER.name;} /* case-insensitive so an already-stored mixed-case backend row still matches (USER.email is pre-lowercased) */
+function lbRowHtml(r,extraClass){
+  return '<div class="lbrow'+(isMe(r)?' me':'')+(extraClass?' '+extraClass:'')+'">'
+    +'<span class="rank">'+String(r.rank).padStart(2,'0')+'</span>'
+    +'<span class="nm">'+String(r.name||'').replace(/[<>&]/g,'')+'</span>'
+    +'<span class="pts">'+(+r.xp||0)+' XP</span></div>'; /* coerce xp to a number — backend rows are untrusted JSON and this lands in innerHTML */
+}
+let lbLoading=false; /* guards against overlapping fetch/render passes if a leaderboard button is clicked again before the previous one resolves */
 async function renderLeaderboard(){
-  const list=document.getElementById('lbList');list.innerHTML='';
-  let rows=await fetchLeaderboard();
-  if(!rows||!rows.length){
-    rows=[{name:'RIYA K.',xp:640},{name:'DEV P.',xp:520},{name:'MARIA S.',xp:410},{name:'TOM H.',xp:300}];
-    rows.push({name:USER.name,xp:S.xp});
-  }
-  rows=rows.slice().sort((a,b)=>b.xp-a.xp).slice(0,10);
-  rows.forEach((r,i)=>{
-    const d=document.createElement('div');
-    d.className='lbrow'+(r.name===USER.name?' me':'');
-    d.innerHTML='<span class="rank">'+String(i+1).padStart(2,'0')+'</span>'
-      +'<span class="nm">'+String(r.name||'').replace(/[<>&]/g,'')+'</span>'
-      +'<span class="pts">'+r.xp+' XP</span>';
-    list.appendChild(d);
-  });
+  if(lbLoading)return;
+  lbLoading=true;
+  try{
+    const list=document.getElementById('lbList');list.innerHTML='';
+    let rows=await fetchLeaderboard();
+    const isFallback=!rows; /* null = fetch genuinely failed; a real empty array ([]) is live data and must not be replaced with sample names (same rule as the sister sites) */
+    if(isFallback)
+      rows=[{name:'RIYA K.',xp:640},{name:'DEV P.',xp:520},{name:'MARIA S.',xp:410},{name:'TOM H.',xp:300}];
+    const lbNote=document.querySelector('#lbDrawer .lbnote');
+    if(lbNote){if(!lbNote.dataset.base)lbNote.dataset.base=lbNote.textContent;
+      lbNote.textContent=(isFallback?'Sample data — live rankings will appear once the leaderboard connects. ':'')+lbNote.dataset.base;}
+    rows=rows.slice();
+    const mine=rows.find(isMe);
+    if(mine)mine.xp=S.xp;else rows.push({name:USER.name,email:USER.email,xp:S.xp}); /* client's own S.xp is always at least as fresh as a backend row that may predate a pending save */
+    rows.sort((a,b)=>(+b.xp||0)-(+a.xp||0));
+    let rank=0,prevXp=null;
+    rows.forEach((r,i)=>{const xp=+r.xp||0;if(prevXp===null||xp!==prevXp)rank=i+1;r.rank=rank;prevXp=xp;}); /* coerce to number before comparing — backend rows can arrive as numeric strings, which would break tie-detection under strict !== */
+    const top=rows.slice(0,10);
+    const meRow=rows.find(isMe);
+    list.innerHTML=top.map(r=>lbRowHtml(r)).join('');
+    const meTiedInTop=top.length&&meRow&&meRow.rank===top[top.length-1].rank; /* tied with the visible group even though the slice cut them off — not a distinct lower rank (same rule as the sister sites) */
+    if(meRow&&!top.some(isMe)&&!meTiedInTop){
+      const sep=document.createElement('p');
+      sep.className='lbnote';sep.style.margin='12px 0 6px';sep.textContent='Your rank';
+      list.appendChild(sep);
+      list.insertAdjacentHTML('beforeend',lbRowHtml(meRow));
+    }
+  }finally{lbLoading=false;}
 }
 document.querySelectorAll('.lbBtn').forEach(b=>b.addEventListener('click',()=>{
   renderLeaderboard();document.getElementById('lbDrawer').classList.add('open');ev('leaderboard-open');}));
@@ -1086,25 +1129,34 @@ document.getElementById('slackLink').addEventListener('click',e=>{e.preventDefau
 
 /* ---------- restore ---------- */
 (function restore(){
-  load();setXp();
-  const done=Object.keys(S.cleared).map(Number).filter(n=>n<=4).sort();
-  const saved={...S.cleared};S.cleared={};
-  done.forEach(id=>advance(id,true));
-  if(saved[5])S.cleared[5]=1;
-  Object.keys(S.courses).forEach(k=>markCourse(k,true));
-  Object.keys(S.quiz).forEach(qid=>{
-    const block=document.querySelector(`.quiz[data-qid="${qid}"]`);
-    if(block)applyQuizVisual(block,qid);
-  });
-  checkS3Continue();
-  if(S.range)drawChart(S.range);
-  Object.entries(S.fields).forEach(([k,val])=>{
-    const t=document.querySelector(`[data-f="${k}"]`);if(t)t.value=val;});
-  if(S.applied)doApply(true);
-  if(S.reflectOpen)doReflect(true);
-  if(S.mailed)doMail(true);
+  RESTORING=true; /* save() is a no-op during this replay — nothing changed, and partial mid-replay localStorage writes would ping-pong reloads across tabs via the 'storage' listener */
+  let done=[];
+  try{
+    load();setXp();
+    done=Object.keys(S.cleared).map(Number).filter(n=>n<=6).sort(); /* replay every advance()-tracked checkpoint (1-6), not just 1-4, so s6/s7 actually re-unlock on reload */
+    S.cleared={};
+    done.forEach(id=>advance(id,true));
+    Object.keys(S.courses).forEach(k=>markCourse(k,true));
+    Object.keys(S.quiz).forEach(qid=>{
+      const block=document.querySelector(`.quiz[data-qid="${qid}"]`);
+      if(block)applyQuizVisual(block,qid);
+    });
+    checkS3Continue();
+    if(S.range){drawChart(S.range);
+      /* restore the plotted-state UI too (same fix as expand-your-range): refill the
+         saved score line and relabel the button, so a reload doesn't show an empty
+         box + 'Plot my bearings' that errors even though a chart is already drawn */
+      const si=document.getElementById('scoreIn');if(si&&S.range.raw)si.value=S.range.raw;
+      const sg=document.getElementById('scoreGo');if(sg)sg.textContent='Re-plot';}
+    Object.entries(S.fields).forEach(([k,val])=>{
+      const t=document.querySelector(`[data-f="${k}"]`);if(t)t.value=val;});
+    if(S.applied)doApply(true);
+    if(S.reflectOpen)doReflect(true);
+    if(S.mailed)doMail(true);
+  }catch(e){console.error('Loom restore hit an error, continuing with whatever state was recovered:',e);} /* a partial-state throw must not abort the rest of page init (same pattern as expand-your-range) */
+  RESTORING=false; /* always re-armed — even after a throw above — so later real actions still persist */
   /* open the first unfinished stage */
-  const next=Math.min(done.length+1,5);
+  const next=Math.min(done.length+1,7); /* sections run s1..s7 (Reflect/Share included) — capping at 5 forced a resume past Tapestry back into the already-done s5 */
   document.querySelectorAll('.stage').forEach(s=>s.classList.remove('open'));
   const el=document.getElementById('s'+next);if(el&&!el.classList.contains('locked'))el.classList.add('open');
   refresh();
