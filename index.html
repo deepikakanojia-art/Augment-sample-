@@ -297,8 +297,9 @@ a.btn{text-decoration:none}
 .acts{display:flex;gap:9px;flex-wrap:wrap;margin-top:4px}
 
 .vid{aspect-ratio:16/9;border-radius:12px;border:1px dashed rgba(255,95,168,.42);display:grid;place-items:center;
-  text-align:center;color:var(--dim);background:rgba(255,95,168,.06);margin-bottom:14px;font-size:12.5px}
+  text-align:center;color:var(--dim);background:rgba(255,95,168,.06);margin-bottom:14px;font-size:12.5px;overflow:hidden}
 .vid b{display:block;color:var(--text);font-size:15px;margin-bottom:3px}
+.vid video{width:100%;height:100%;object-fit:contain;background:#000;border-radius:11px;display:block}
 .pbox{border:1px solid var(--line);border-radius:11px;background:#F7F2FA;padding:14px;margin:10px 0}
 .pbox code{color:var(--mint);font-family:var(--mono);font-size:12.5px}
 ol.steps{counter-reset:s;list-style:none;margin:12px 0 14px}
@@ -324,12 +325,12 @@ label.q i{font-style:normal;color:var(--pink);font-family:var(--mono);font-size:
 .course.share{border-style:dashed;opacity:.55;position:relative}
 .course.share.ready{opacity:1;border-style:solid;border-color:var(--gold,#C8A24B)}
 .course.share.shared em{color:var(--mint,#3FBF9F)}
-.course.share.rainbow{border-color:transparent;background:rgba(20,16,30,.72)}
+.course.share.rainbow{border-color:transparent;background:rgba(255,251,254,.94)}
 .course.share.rainbow::before{content:'';position:absolute;inset:-2px;border-radius:13px;z-index:-2;
-  background:linear-gradient(120deg,#FF5FA8,#F5A8D8,#FFC2E2,#5C4FE5,#C9A8FF,#FF5FA8);
+  background:linear-gradient(120deg,#FF3D81,#FF9D3D,#FFD93D,#3DDC97,#3D9BFF,#8B3DFF,#FF3D81);
   background-size:200% 200%;filter:blur(11px);opacity:.9;animation:rainbowGlow 3.2s ease-in-out infinite}
 .course.share.rainbow::after{content:'';position:absolute;inset:0;border-radius:12px;z-index:-1;
-  padding:1.5px;background:linear-gradient(120deg,#FF5FA8,#F5A8D8,#FFC2E2,#5C4FE5,#C9A8FF,#FF5FA8);
+  padding:1.5px;background:linear-gradient(120deg,#FF3D81,#FF9D3D,#FFD93D,#3DDC97,#3D9BFF,#8B3DFF,#FF3D81);
   background-size:200% 200%;-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);
   -webkit-mask-composite:xor;mask-composite:exclude;animation:rainbowGlow 3.2s ease-in-out infinite}
 @keyframes rainbowGlow{0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%}}
